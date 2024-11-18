@@ -3,63 +3,17 @@ local notify = require("justice.utils").notify
 local actions = require("justice.actions")
 --------------------------------------------------------------------------------
 
----@class Recipe
----@field name string
----@field comment string
----@field displayText string
----@field type? "streaming"|"quickfix"|"ignore"
-
 ---@return integer
 ---@nodiscard
 local function lnum() return vim.api.nvim_win_get_cursor(0)[1] end
 
---------------------------------------------------------------------------------
-
----@nodiscard
----@return Recipe[]?
-local function getRecipes()
-	-- in case user is currently editing a Justfile
-	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
-
-	local config = require("justice.config").config
-
-	local cmd = { "just", "--list", "--unsorted", "--list-heading=", "--list-prefix=" }
-	local result = vim.system(cmd):wait()
-	if result.code ~= 0 then
-		notify(result.stderr, "error")
-		return
-	end
-	local stdout = vim.split(result.stdout, "\n", { trimempty = true })
-
-	local recipes = vim.iter(stdout)
-		:map(function(line)
-			local name, comment = line:match("^(%S+)%s*# (.+)")
-			if comment then
-				local max = config.window.recipeCommentMaxLen
-				if #comment > max then comment = comment:sub(1, max) .. "…" end
-			end
-			if not name then name = line:match("^%S+") end
-			local displayText = vim.trim(name .. "  " .. (comment or ""))
-
-			local type
-			if vim.tbl_contains(config.recipes.streaming, name) then type = "streaming" end
-			if vim.tbl_contains(config.recipes.quickfix, name) then type = "quickfix" end
-			if vim.tbl_contains(config.recipes.ignore, name) then type = "ignore" end
-
-			return { name = name, comment = comment, type = type, displayText = displayText }
-		end)
-		:totable()
-	return recipes
-end
-
-function M.select()
+---@param allRecipes Recipe[]
+function M.select(allRecipes)
 	local config = require("justice.config").config
 	local ns = vim.api.nvim_create_namespace("just-recipes")
-	local title = (" %s Justfile "):format(config.icons.just)
+	local title = " " .. vim.trim(config.icons.just .. " Justfile") .. " "
 
-	-- get recipes
-	local allRecipes = getRecipes()
-	if not allRecipes then return end
+	-- prepare recipes for display
 	local recipes = vim.tbl_filter(function(r) return r.type ~= "ignore" end, allRecipes)
 	if #recipes == 0 then
 		notify("Justfile has no recipes.", "warn")
