@@ -2,7 +2,7 @@ local M = {}
 local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
----@param recipe Recipe
+---@param recipe Justice.Recipe
 function M.runRecipe(recipe)
 	vim.cmd("silent! update")
 
@@ -55,7 +55,7 @@ function M.runRecipe(recipe)
 	)
 end
 
----@param recipe Recipe
+---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
 	local stdout = vim.system({ "just", "--show", recipe.name }):wait().stdout or "Error"
 	notify(stdout, "trace", {

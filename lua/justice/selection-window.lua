@@ -7,7 +7,7 @@ local actions = require("justice.actions")
 ---@nodiscard
 local function lnum() return vim.api.nvim_win_get_cursor(0)[1] end
 
----@param allRecipes Recipe[]
+---@param allRecipes Justice.Recipe[]
 function M.select(allRecipes)
 	local config = require("justice.config").config
 	local ns = vim.api.nvim_create_namespace("just-recipes")

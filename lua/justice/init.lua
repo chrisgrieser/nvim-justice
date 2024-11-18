@@ -1,7 +1,7 @@
 local M = {}
 --------------------------------------------------------------------------------
 
----@class Recipe
+---@class Justice.Recipe
 ---@field name string
 ---@field comment string
 ---@field displayText string

@@ -3,7 +3,7 @@ local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
 ---@nodiscard
----@return Recipe[]?
+---@return Justice.Recipe[]?
 function M.get()
 	-- in case user is currently editing a Justfile
 	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
