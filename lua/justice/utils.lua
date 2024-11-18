@@ -14,6 +14,5 @@ function M.notify(msg, level, opts)
 	vim.notify(vim.trim(msg), vim.log.levels[level:upper()], opts)
 end
 
-
 --------------------------------------------------------------------------------
 return M
