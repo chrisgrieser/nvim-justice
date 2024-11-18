@@ -4,6 +4,7 @@
 Table of Contents                                  *justice-table-of-contents*
 
 1. nvim-justice                                        |justice-nvim-justice-|
+  - Table of contents                |justice-nvim-justice--table-of-contents|
   - Features                                  |justice-nvim-justice--features|
   - Installation                          |justice-nvim-justice--installation|
   - Configuration                        |justice-nvim-justice--configuration|
@@ -13,10 +14,12 @@ Table of Contents                                  *justice-table-of-contents*
 ==============================================================================
 1. nvim-justice                                        *justice-nvim-justice-*
 
-Lightweightintegration of the just <https://github.com/casey/just> task runner
-in nvim.
+Lightweightintegration of `just` <https://github.com/casey/just> in nvim.
 
 
+
+
+TABLE OF CONTENTS                    *justice-nvim-justice--table-of-contents*
 
 - |justice-features|
 - |justice-installation|
@@ -71,7 +74,6 @@ The `setup` call is optional.
             ignore = { "run-fzf" }, -- for recipes that require user input
             streaming = { "run-streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
             quickfix = {}, -- runs synchronously and sends output to quickfix list
-            commentMaxLen = 35, -- truncate recipe comments if longer
         },
         keymaps = {
             next = "<Tab>",
@@ -81,6 +83,10 @@ The `setup` call is optional.
             quickSelect = { "f", "d", "s", "a" },
             showRecipe = "<Space>",
             showVariables = "?",
+        },
+        window = {
+            border = "rounded",
+            recipeCommentMaxLen = 35,
         },
         highlights = {
             quickSelect = "Conditional",
