@@ -52,7 +52,7 @@ body:
       value: |
         local spec = {
         	{
-        		"PLACEHOLDER_plugin_repo",
+        		"chrisgrieser/nvim-justice",
         		opts = {}, -- insert config here
         	},
         }

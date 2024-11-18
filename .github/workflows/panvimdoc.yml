@@ -22,7 +22,7 @@ jobs:
 
       - uses: kdheepak/panvimdoc@main
         with:
-          vimdoc: PLACEHOLDER_plugin_name_short
+          vimdoc: justice
           demojify: true
           treesitter: true
           description: " Auto-generated from README.md. Do not make PRs to this file."
