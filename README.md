@@ -8,33 +8,41 @@
 
 Lightweight integration of the [just](https://github.com/casey/just) task runner in nvim.
 
+<img alt="Showcase" width=70% src="https://github.com/user-attachments/assets/ae011582-61b2-41d0-b479-cc5eb9b1427d">
+
 <!-- toc -->
 
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Limitations](#limitations)
 - [About the author](#about-the-author)
 
 <!-- tocstop -->
 
 ## Features
-- …
+- **Quick-select** recipes via keys shown at the left of the window. Running
+  recipes thus requires only 2–3 keystrokes.
+- Output results in a notification window or in the quickfix list.
+- Supports streaming output (e.g., when a recipe outputs a progress bar.)
+- Inspect recipes and variable values.
+- Hide specific recipes, useful to always exclude recipes that require user
+  input.
 
 ## Installation
 **Requirements**
 - nvim 0.10+
 - [just](https://github.com/casey/just)
-- optional: snacks.nvim (for streaming output)
-- optional: `just` Treesitter parser (`:TSInstall just`)
+- *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (required for
+  streaming output)
+- *optional:* Treesitter parser for syntax highlighting (`:TSInstall just`)
 
 ```lua
 -- lazy.nvim
 {
 	"chrisgrieser/nvim-justice",
 	keys = {
-		{ "<leader>j", function() require("justice").just() end, desc = "Justice" },
+		{ "<leader>j", function() require("justice").select() end, desc = "Justice" },
 	},
 },
 
@@ -42,7 +50,7 @@ Lightweight integration of the [just](https://github.com/casey/just) task runner
 use {
 	"chrisgrieser/nvim-justice",
 }
-vim.keymap.set("n", "<leader>j", function() require("justice").just() end, { desc = "Justice" })
+vim.keymap.set("n", "<leader>j", function() require("justice").select() end, { desc = "Justice" })
 ```
 
 ## Configuration
@@ -80,13 +88,10 @@ require("justice").setup {
 ```
 
 ## Usage
-- `require("justice").just()`
+- `require("justice").select()`
 - Navigate the window via `<Tab>` & `<S-Tab>`, select with `<CR>`.
-- Quick-select recipes via keys shown at the left of the window.
+- **Quick-select** recipes via keys shown at the left of the window.
 - Show recipe via `<Space>`.
-
-## Limitations
-- …
 
 ## About the author
 In my day job, I am a sociologist studying the social mechanisms underlying the
