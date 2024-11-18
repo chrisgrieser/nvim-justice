@@ -4,17 +4,17 @@ local M = {}
 ---@class Justice.config
 local defaultConfig = {
 	recipes = {
-		quickfix = { "check-tsc" }, -- runs synchronously and sends output to quickfix list
+		ignore = { "run-fzf" }, -- for recipes that require user input
 		streaming = { "run-streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
-		ignore = { "release", "run-fzf" }, -- for recipes that require user input
+		quickfix = {}, -- runs synchronously and sends output to quickfix list
 		commentMaxLen = 35, -- truncate recipe comments if longer
 	},
 	keymaps = {
 		next = "<Tab>",
 		prev = "<S-Tab>",
 		runRecipe = "<CR>",
-		closeWin = { "q", "<Esc>", "<D-w>" },
-		quickSelect = { "j", "f", "d", "s", "a" },
+		closeWin = { "q", "<Esc>" },
+		quickSelect = { "f", "d", "s", "a" },
 		showRecipe = "<Space>",
 		showVariables = "?",
 	},
