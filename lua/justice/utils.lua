@@ -1,18 +1,19 @@
 local M = {}
 --------------------------------------------------------------------------------
 
----@param body string
+---@param msg string
 ---@param level? "info"|"trace"|"debug"|"warn"|"error"
 ---@param opts? table
-function M.notify(body, level, opts)
-	if not opts then opts = {} end
+function M.notify(msg, level, opts)
+	local config = require("justice").config
 	if not level then level = "info" end
-
-	local pluginName = "justice"
-	local notifyTitle = opts.title and pluginName .. ": " .. opts.title or pluginName
-
-	vim.notify(vim.trim(body), vim.log.levels[level:upper()], { title = notifyTitle })
+	if not opts then opts = {} end
+	opts.id = "just-recipe" -- `snacks.nvim` replaces notifications of same id
+	opts.icon = config.icons.just
+	opts.title = opts.title and "Just: " .. opts.title or "Just"
+	vim.notify(vim.trim(msg), vim.log.levels[level:upper()], opts)
 end
+
 
 --------------------------------------------------------------------------------
 return M
