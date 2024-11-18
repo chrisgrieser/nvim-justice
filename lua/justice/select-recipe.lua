@@ -35,7 +35,7 @@ local function getRecipes()
 		:map(function(line)
 			local name, comment = line:match("^(%S+)%s*# (.+)")
 			if comment then
-				local max = config.recipes.commentMaxLen
+				local max = config.window.recipeCommentMaxLen
 				if #comment > max then comment = comment:sub(1, max) .. "…" end
 			end
 			if not name then name = line:match("^%S+") end
@@ -66,6 +66,7 @@ function M.select()
 		return
 	end
 	local ignoreCount = #allRecipes - #recipes
+	local displayLines = vim.tbl_map(function(r) return r.displayText end, recipes)
 
 	-- calculate window size
 	local longestRecipe = math.max(unpack(vim.tbl_map(function(r)
@@ -78,8 +79,7 @@ function M.select()
 
 	-- create window
 	local bufnr = vim.api.nvim_create_buf(false, true)
-	local lines = vim.tbl_map(function(r) return r.displayText end, recipes)
-	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, displayLines)
 	local footer = (" %dx %s "):format(ignoreCount, config.icons.ignore)
 	local winnr = vim.api.nvim_open_win(bufnr, true, {
 		relative = "editor",

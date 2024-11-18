@@ -7,7 +7,6 @@ local defaultConfig = {
 		ignore = { "run-fzf" }, -- for recipes that require user input
 		streaming = { "run-streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
 		quickfix = {}, -- runs synchronously and sends output to quickfix list
-		commentMaxLen = 35, -- truncate recipe comments if longer
 	},
 	keymaps = {
 		next = "<Tab>",
@@ -20,6 +19,7 @@ local defaultConfig = {
 	},
 	window = {
 		border = "rounded",
+		recipeCommentMaxLen = 35,
 	},
 	highlights = {
 		quickSelect = "Conditional",
