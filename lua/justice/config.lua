@@ -18,6 +18,9 @@ local defaultConfig = {
 		showRecipe = "<Space>",
 		showVariables = "?",
 	},
+	window = {
+		border = "rounded",
+	},
 	highlights = {
 		quickSelect = "Conditional",
 		icons = "Function",

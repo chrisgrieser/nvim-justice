@@ -87,7 +87,7 @@ function M.select()
 		col = (vim.o.columns - winWidth) / 2,
 		width = winWidth,
 		height = winHeight,
-		border = vim.g.borderStyle or "single",
+		border = config.window.border,
 		style = "minimal",
 		title = title,
 		title_pos = "center",

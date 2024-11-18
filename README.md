@@ -76,6 +76,9 @@ require("justice").setup {
 		showRecipe = "<Space>",
 		showVariables = "?",
 	},
+	window = {
+		border = "rounded",
+	},
 	highlights = {
 		quickSelect = "Conditional",
 		icons = "Function",
