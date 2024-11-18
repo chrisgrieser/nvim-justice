@@ -6,9 +6,11 @@
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-justice/shield"/></a>
 -->
 
-Lightweight integration of the [just](https://github.com/casey/just) task runner in nvim.
+Lightweight integration of [`just`](https://github.com/casey/just) in nvim.
 
-<img alt="Showcase" width=70% src="https://github.com/user-attachments/assets/ae011582-61b2-41d0-b479-cc5eb9b1427d">
+<img alt="Showcase" width=50% src="https://github.com/user-attachments/assets/ae011582-61b2-41d0-b479-cc5eb9b1427d">
+
+## Table of contents
 
 <!-- toc -->
 
