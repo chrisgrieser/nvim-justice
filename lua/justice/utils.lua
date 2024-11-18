@@ -5,7 +5,7 @@ local M = {}
 ---@param level? "info"|"trace"|"debug"|"warn"|"error"
 ---@param opts? table
 function M.notify(msg, level, opts)
-	local config = require("justice").config
+	local config = require("justice.config").config
 	if not level then level = "info" end
 	if not opts then opts = {} end
 	opts.id = "just-recipe" -- `snacks.nvim` replaces notifications of same id

@@ -1,5 +1,5 @@
 local M = {}
-local notify = require("utils").notify
+local notify = require("justice.utils").notify
 local actions = require("justice.actions")
 --------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ local function getRecipes()
 	-- in case user is currently editing a Justfile
 	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
 
-	local config = require("justice").config
+	local config = require("justice.config").config
 
 	local cmd = { "just", "--list", "--unsorted", "--list-heading=", "--list-prefix=" }
 	local result = vim.system(cmd):wait()
@@ -52,8 +52,8 @@ local function getRecipes()
 	return recipes
 end
 
-function M.recipe()
-	local config = require("justice").config
+function M.select()
+	local config = require("justice.config").config
 	local ns = vim.api.nvim_create_namespace("just-recipes")
 	local title = (" %s Justfile "):format(config.icons.just)
 

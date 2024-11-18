@@ -1,6 +1,6 @@
 local M = {}
 
-local notify = require("utils").notify
+local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
 ---@param recipe Recipe
