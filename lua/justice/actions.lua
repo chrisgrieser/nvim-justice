@@ -61,7 +61,7 @@ function M.showRecipe(recipe)
 	notify(stdout, "trace", {
 		title = recipe.name,
 		ft = "just",
-		keep = function() return true end,
+		timeout = false, -- keep shown until win closed or manually dismissed
 	})
 end
 
@@ -73,7 +73,7 @@ function M.showVariables()
 		notify(stdout, "trace", {
 			title = "Variables",
 			ft = "just",
-			keep = function() return true end,
+			timeout = false, -- keep shown until win closed or manually dismissed
 		})
 	end
 end
