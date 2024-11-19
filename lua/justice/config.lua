@@ -4,9 +4,12 @@ local M = {}
 ---@class Justice.config
 local defaultConfig = {
 	recipes = {
-		ignore = { "run-fzf" }, -- for recipes that require user input
-		streaming = { "run-streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
-		quickfix = {}, -- runs synchronously and sends output to quickfix list
+		-- All strings here are checked via `string.find`, that is as lua
+		-- patterns. For example, all recipes that contain `fzf` are ignored.
+		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
+		ignore = { "fzf" }, -- for recipes that require user input
+		streaming = { "streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
+		quickfix = { "qf" }, -- runs synchronously and sends output to quickfix list
 	},
 	keymaps = {
 		next = "<Tab>",

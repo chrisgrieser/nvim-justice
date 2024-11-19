@@ -25,8 +25,10 @@ Lightweight integration of [`just`](https://github.com/casey/just) in nvim.
 ## Features
 - **Quick-select** recipes via keys shown at the left of the window. Running
   recipes thus requires only 2–3 keystrokes.
-- Output results in a notification window or in the quickfix list.
-- Supports streaming output (e.g., when a recipe outputs a progress bar.)
+- Runs asynchronously and outputs results in a notification window.
+- Supports streaming output (e.g., for recipes that display a progress bar).
+- Can alternatively run asynchronously and send individual recipe results to the
+  **quickfix list**.
 - Inspect recipes and variable values.
 - Hide specific recipes, useful to always exclude recipes that require user
   input.
@@ -62,9 +64,12 @@ The `setup` call is optional.
 -- default settings
 require("justice").setup {
 	recipes = {
-		ignore = { "run-fzf" }, -- for recipes that require user input
-		streaming = { "run-streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
-		quickfix = {}, -- runs synchronously and sends output to quickfix list
+		-- All strings here are checked via `string.find`, that is as lua
+		-- patterns. For example, all recipes that contain `fzf` are ignored.
+		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
+		ignore = { "fzf" }, -- for recipes that require user input
+		streaming = { "streaming" }, -- streams output, e.g. for progress bars (requires `snacks.nvim`)
+		quickfix = { "qf" }, -- runs synchronously and sends output to quickfix list
 	},
 	keymaps = {
 		next = "<Tab>",

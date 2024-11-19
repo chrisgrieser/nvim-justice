@@ -29,9 +29,13 @@ function M.get()
 			local displayText = vim.trim(name .. "  " .. (comment or ""))
 
 			local type
-			if vim.tbl_contains(config.recipes.streaming, name) then type = "streaming" end
-			if vim.tbl_contains(config.recipes.quickfix, name) then type = "quickfix" end
-			if vim.tbl_contains(config.recipes.ignore, name) then type = "ignore" end
+			if vim.iter(config.recipes.ignore):any(function(pat) return name:find(pat) end) then
+				type = "ignore"
+			elseif vim.iter(config.recipes.streaming):any(function(pat) return name:find(pat) end) then
+				type = "streaming"
+			elseif vim.iter(config.recipes.quickfix):any(function(pat) return name:find(pat) end) then
+				type = "quickfix"
+			end
 
 			return { name = name, comment = comment, type = type, displayText = displayText }
 		end)
