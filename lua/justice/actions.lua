@@ -2,15 +2,15 @@ local M = {}
 local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
----@param recipe Justice.Recipe
-function M.runRecipe(recipe)
+---@param rec Justice.Recipe
+function M.runRecipe(rec)
 	vim.cmd("silent! update")
 
 	-- 1) QUICKFIX
-	if recipe.type == "quickfix" then
+	if rec.type == "quickfix" then
 		local prev = vim.bo.makeprg
 		vim.bo.makeprg = "just"
-		vim.cmd.make(recipe.name)
+		vim.cmd.make(rec.name)
 		vim.bo.makeprg = prev
 
 		pcall(vim.cmd.cfirst) -- if there is a quickfix item, move to the 1st one
@@ -18,23 +18,26 @@ function M.runRecipe(recipe)
 		return
 	end
 
-	notify("Running…", nil, { title = recipe.name }) -- FIX also fixes snacks.nvim loop-backback error
+	if package.loaded["snacks"] then
+		-- only snacks.nvim supports replacing notifications
+		notify("Running…", nil, { title = rec.name })
+	end
 
 	-- 2) STREAMING
-	if recipe.type == "streaming" then
+	if rec.type == "streaming" then
 		if not package.loaded["snacks"] then
 			local msg = "`snacks.nvim` is required for streaming output."
-			notify(msg, "error", { title = recipe.name })
+			notify(msg, "error", { title = rec.name })
 			return
 		end
 		local function bufferedOut(_, data)
 			if not data then return end
 			-- severity not determined by stderr, as many CLIs send non-errors to it
 			local severity = data:find("error") and "error" or "info"
-			notify(data, severity, { title = recipe.name })
+			notify(data, severity, { title = rec.name })
 		end
 		vim.system(
-			{ "just", recipe.name },
+			{ "just", rec.name },
 			{ stdout = bufferedOut, stderr = bufferedOut },
 			vim.schedule_wrap(function() vim.cmd.checktime() end)
 		)
@@ -43,14 +46,14 @@ function M.runRecipe(recipe)
 
 	-- 3) DEFAULT
 	vim.system(
-		{ "just", recipe.name },
+		{ "just", rec.name },
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime()
 			local text = (out.stdout or "") .. (out.stderr or "")
 			local severity = out.code == 0 and "info" or "error"
 			if vim.trim(text) == "" then return end
-			notify(text, severity, { title = recipe.name })
+			notify(text, severity, { title = rec.name })
 		end)
 	)
 end
