@@ -2,16 +2,25 @@ local M = {}
 local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
----@nodiscard
+---@param opts Justice.RunOptions
 ---@return Justice.Recipe[]?
-function M.get()
+---@nodiscard
+function M.get(opts)
 	-- in case user is currently editing a Justfile
 	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
 
 	local config = require("justice.config").config
 
-	local cmd = { "just", "--list", "--unsorted", "--list-heading=", "--list-prefix=" }
-	local result = vim.system(cmd):wait()
+	local args = {
+		"just",
+		opts.justfile and "--justfile=" .. opts.justfile or nil,
+		"--list",
+		"--unsorted",
+		"--list-heading=",
+		"--list-prefix=",
+	}
+
+	local result = vim.system(args):wait()
 	if result.code ~= 0 then
 		notify(result.stderr, "error")
 		return
@@ -37,7 +46,13 @@ function M.get()
 				type = "quickfix"
 			end
 
-			return { name = name, comment = comment, type = type, displayText = displayText }
+			return {
+				name = name,
+				comment = comment,
+				type = type,
+				displayText = displayText,
+				justfile = opts.justfile,
+			}
 		end)
 		:totable()
 	return recipes

@@ -98,7 +98,17 @@ require("justice").setup {
 ```
 
 ## Usage
-- `require("justice").select()`
+
+```lua
+-- basic usage
+require("justice").select()
+
+-- optionally set parameters
+require("justice").select({
+	justfile = "path/to/custom/justfile", -- passed to `--justfile=`
+})
+```
+
 - Navigate the window via `<Tab>` & `<S-Tab>`, select with `<CR>`.
 - **Quick-select** recipes via keys shown at the left of the window.
 - Show recipe via `<Space>`.

@@ -1,17 +1,21 @@
 local M = {}
 --------------------------------------------------------------------------------
 
----@class Justice.Recipe
----@field name string
----@field comment string
----@field displayText string
----@field type? "streaming"|"quickfix"|"ignore"
-
 ---@param userConfig? Justice.config
 M.setup = function(userConfig) require("justice.config").setup(userConfig) end
 
-M.select = function()
-	local allRecipes = require("justice.get-recipes").get()
+---@param opts? Justice.RunOptions
+---@return Justice.RunOptions
+local function prepareOpts(opts)
+	if not opts then opts = {} end
+	if opts.justfile then opts.justfile = vim.fs.normalize(opts.justfile) end
+	return opts
+end
+
+---@param opts? Justice.RunOptions
+M.select = function(opts)
+	opts = prepareOpts(opts)
+	local allRecipes = require("justice.get-recipes").get(opts)
 	if not allRecipes then return end
 	require("justice.selection-window").select(allRecipes)
 end

@@ -9,19 +9,30 @@ function M.runRecipe(rec)
 	-- 1) QUICKFIX
 	if rec.type == "quickfix" then
 		local prev = vim.bo.makeprg
+
 		vim.bo.makeprg = "just"
-		vim.cmd.make(rec.name)
-		vim.bo.makeprg = prev
+		local argsStr = rec.justfile and "--justfile=" .. rec.justfile .. " " or ""
+		argsStr = argsStr .. rec.name
+		vim.cmd.make(argsStr)
 
 		pcall(vim.cmd.cfirst) -- if there is a quickfix item, move to the 1st one
 		vim.cmd.checktime() -- reload buffer in case of changes
+		vim.bo.makeprg = prev
+
 		return
 	end
 
-	if package.loaded["snacks"] then
-		-- only snacks.nvim supports replacing notifications
-		notify("Running…", nil, { title = rec.name })
-	end
+	-- PRE-RUN NOTIFICATION
+	-- only snacks.nvim supports replacing notifications
+	if package.loaded["snacks"] then notify("Running…", nil, { title = rec.name }) end
+
+	-- ARGS
+	local args = {
+		"just",
+		rec.justfile and "--justfile=" .. rec.justfile or nil,
+		rec.name,
+	}
+	args = vim.tbl_filter(function(a) return a end, args) -- remove nils
 
 	-- 2) STREAMING
 	if rec.type == "streaming" then
@@ -37,7 +48,7 @@ function M.runRecipe(rec)
 			notify(data, severity, { title = rec.name })
 		end
 		vim.system(
-			{ "just", rec.name },
+			args,
 			{ stdout = bufferedOut, stderr = bufferedOut },
 			vim.schedule_wrap(function() vim.cmd.checktime() end)
 		)
@@ -46,7 +57,7 @@ function M.runRecipe(rec)
 
 	-- 3) DEFAULT
 	vim.system(
-		{ "just", rec.name },
+		args,
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime()
@@ -60,7 +71,14 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
-	local stdout = vim.system({ "just", "--show", recipe.name }):wait().stdout or "Error"
+	local args = {
+		"just",
+		recipe.justfile and "--justfile=" .. recipe.justfile or nil,
+		"--show",
+		recipe.name,
+	}
+
+	local stdout = vim.system(args):wait().stdout or "Error"
 	notify(stdout, "trace", {
 		title = recipe.name,
 		ft = "just",
@@ -68,8 +86,15 @@ function M.showRecipe(recipe)
 	})
 end
 
-function M.showVariables()
-	local stdout = vim.system({ "just", "--evaluate" }):wait().stdout or "Error"
+---@param recipe Justice.Recipe
+function M.showVariables(recipe)
+	local args = {
+		"just",
+		recipe.justfile and "--justfile=" .. recipe.justfile or nil,
+		"--evaluate",
+	}
+
+	local stdout = vim.system(args):wait().stdout or "Error"
 	if vim.trim(stdout) == "" then
 		notify("No variables defined.", "warn", { title = "Variables" })
 	else

@@ -97,7 +97,12 @@ function M.select(allRecipes)
 		function() actions.showRecipe(recipes[lnum()]) end,
 		opts
 	)
-	vim.keymap.set("n", config.keymaps.showVariables, actions.showVariables, opts)
+	vim.keymap.set(
+		"n",
+		config.keymaps.showVariables,
+		function() actions.showVariables(recipes[lnum()]) end,
+		opts
+	)
 
 	-- quick-select keymaps
 	for i = 1, #recipes do
