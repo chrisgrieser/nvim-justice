@@ -82,7 +82,8 @@ function M.showRecipe(recipe)
 	notify(stdout, "trace", {
 		title = recipe.name,
 		ft = "just",
-		timeout = false, -- keep shown until win closed or manually dismissed
+		-- if snacks.nvim, keep shown until win closed or manually dismissed
+		timeout = not package.loaded["snacks"],
 	})
 end
 
@@ -101,7 +102,7 @@ function M.showVariables(recipe)
 		notify(stdout, "trace", {
 			title = "Variables",
 			ft = "just",
-			timeout = false, -- keep shown until win closed or manually dismissed
+			timeout = not package.loaded["snacks"],
 		})
 	end
 end

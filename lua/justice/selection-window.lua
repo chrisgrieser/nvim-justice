@@ -71,8 +71,7 @@ function M.select(allRecipes)
 	-- general keymaps
 	local function closeWin()
 		vim.api.nvim_win_close(winnr, true)
-		local ok, snacks = pcall(require, "snacks")
-		if ok then snacks.notifier.hide("just-recipe") end
+		if package.loaded["snacks"] then require("snacks").notifier.hide("just-recipe") end
 	end
 	local opts = { buffer = bufnr, nowait = true }
 	local optsExpr = vim.tbl_extend("force", opts, { expr = true })
