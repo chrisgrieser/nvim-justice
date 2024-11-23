@@ -33,16 +33,28 @@ function M.runRecipe(recipe)
 			notify(msg, "error", { title = recipe.name })
 			return
 		end
+		local lastData = ""
 		local function bufferedOut(_, data)
 			if not data then return end
 			-- severity not determined by stderr, as many CLIs send non-errors to it
-			local severity = data:find("error") and "error" or "info"
+			local severity = "trace"
+			if data:lower():find("warn") then severity = "warn" end
+			if data:lower():find("error") then severity = "error" end
 			notify(data, severity, { title = recipe.name })
+			lastData = data
 		end
 		vim.system(
 			justArgs(recipe, recipe.name),
 			{ stdout = bufferedOut, stderr = bufferedOut },
-			vim.schedule_wrap(function() vim.cmd.checktime() end)
+			vim.schedule_wrap(function(out)
+				local text = (out.stdout or "") .. (out.stderr or "")
+				if vim.trim(text) == "" then text = lastData end
+				-- change the severity of the last notification as additional visual
+				-- indicator that the task is complete
+				local severity = out.code == 0 and "info" or "error"
+				notify(text, severity, { title = recipe.name })
+				vim.cmd.checktime()
+			end)
 		)
 		return
 	end
