@@ -31,20 +31,24 @@ function M.get(opts)
 	local recipes = vim.iter(stdout)
 		:map(function(line)
 			local name, comment = line:match("^(%S+)%s*# (.+)")
+			if not name then name = line:match("^%S+") end
+			local displayComment = ""
 			if comment then
 				local max = config.window.recipeCommentMaxLen
-				if #comment > max then comment = comment:sub(1, max) .. "…" end
+				if #comment > max then displayComment = comment:sub(1, max) .. "…" end
 			end
-			if not name then name = line:match("^%S+") end
-			local displayText = vim.trim(name .. "  " .. (comment or ""))
+			local displayText = vim.trim(name .. "  " .. displayComment)
 
 			local type
-			if vim.iter(config.recipes.ignore):any(function(pat) return name:find(pat) end) then
-				type = "ignore"
-			elseif vim.iter(config.recipes.streaming):any(function(pat) return name:find(pat) end) then
-				type = "streaming"
-			elseif vim.iter(config.recipes.quickfix):any(function(pat) return name:find(pat) end) then
-				type = "quickfix"
+			for key, pattern in pairs(config.recipes) do
+				local ignoreName = vim.iter(pattern.name)
+					:any(function(pat) return name:find(pat) ~= nil end)
+				local ignoreCom = vim.iter(pattern.comment)
+					:any(function(pat) return (comment or ""):find(pat) ~= nil end)
+				if ignoreName or ignoreCom then
+					type = key
+					break
+				end
 			end
 
 			return {
