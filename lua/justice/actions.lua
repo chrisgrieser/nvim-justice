@@ -24,7 +24,7 @@ function M.runRecipe(recipe)
 
 	-- PRE-RUN NOTIFICATION
 	-- only snacks.nvim supports replacing notifications
-	if package.loaded["snacks"] then notify("Running…", nil, { title = recipe.name }) end
+	if package.loaded["snacks"] then notify("Running…", "trace", { title = recipe.name }) end
 
 	-- 2) STREAMING
 	if recipe.type == "streaming" then
