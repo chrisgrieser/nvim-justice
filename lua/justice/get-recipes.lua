@@ -19,6 +19,7 @@ function M.get(opts)
 		"--list-heading=",
 		"--list-prefix=",
 	}
+	args = vim.tbl_filter(function(a) return a end, args) -- remove nils
 
 	local result = vim.system(args):wait()
 	if result.code ~= 0 then

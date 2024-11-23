@@ -87,8 +87,9 @@ function M.select(allRecipes)
 		return "k"
 	end, optsExpr)
 	vim.keymap.set("n", config.keymaps.runRecipe, function()
-		actions.runRecipe(recipes[lnum()])
-		closeWin()
+		local ln = lnum() -- save now, since not available after window closed
+		closeWin() -- close before run, so early notifications are not hidden
+		actions.runRecipe(recipes[ln])
 	end, opts)
 	vim.keymap.set(
 		"n",
@@ -109,8 +110,8 @@ function M.select(allRecipes)
 		local key = config.keymaps.quickSelect[i]
 		if key then
 			vim.keymap.set("n", key, function()
+				closeWin() -- close before run, so early notifications are not hidden
 				actions.runRecipe(recipe)
-				closeWin()
 			end, opts)
 		end
 		vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {

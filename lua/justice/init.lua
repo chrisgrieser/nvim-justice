@@ -1,7 +1,7 @@
 local M = {}
 --------------------------------------------------------------------------------
 
----@param userConfig? Justice.config
+---@param userConfig? Justice.Config
 M.setup = function(userConfig) require("justice.config").setup(userConfig) end
 
 ---@param opts? Justice.RunOptions

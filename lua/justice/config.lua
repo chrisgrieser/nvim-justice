@@ -1,7 +1,7 @@
 local M = {}
 --------------------------------------------------------------------------------
 
----@class Justice.config
+---@class Justice.Config
 local defaultConfig = {
 	recipes = {
 		-- All strings here are checked via `string.find`, that is as lua
@@ -40,7 +40,7 @@ M.config = defaultConfig
 
 --------------------------------------------------------------------------------
 
----@param userConfig? Justice.config
+---@param userConfig? Justice.Config
 M.setup = function(userConfig)
 	M.config = vim.tbl_deep_extend("force", defaultConfig, userConfig or {})
 end
