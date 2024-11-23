@@ -1,10 +1,8 @@
 <!-- LTeX: enabled=false -->
 # nvim-justice ⚖️
 <!-- LTeX: enabled=true -->
-<!-- TODO uncomment shields when available in dotfyle.com 
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-justice">
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-justice/shield"/></a>
--->
 
 Lightweight integration of [`just`](https://github.com/casey/just) in nvim.
 
