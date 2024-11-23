@@ -15,9 +15,7 @@ function M.runRecipe(recipe)
 		local argsStr = table.concat(justArgs(recipe, recipe.name), " ")
 		vim.cmd.make(argsStr)
 
-		pcall(vim.cmd.cfirst) -- if there is a quickfix item, move to the 1st one
 		vim.cmd.checktime() -- reload buffer in case of changes
-
 		vim.bo.makeprg = prev
 		return
 	end
