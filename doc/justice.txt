@@ -14,6 +14,8 @@ Table of Contents                                  *justice-table-of-contents*
 ==============================================================================
 1. nvim-justice                                        *justice-nvim-justice-*
 
+
+
 Lightweightintegration of `just` <https://github.com/casey/just> in nvim.
 
 
