@@ -1,7 +1,6 @@
 local M = {}
 
 local notify = require("justice.utils").notify
-local justArgs = require("justice.utils").justArgs
 --------------------------------------------------------------------------------
 
 ---@param recipe Justice.Recipe
@@ -56,7 +55,7 @@ function M.runRecipe(recipe)
 		local prev = vim.bo.makeprg
 
 		vim.bo.makeprg = "just"
-		local argsStr = table.concat(justArgs(recipe, recipe.name), " ")
+		local argsStr = table.concat(recipe:justArgs(recipe.name), " ")
 		vim.cmd.make(argsStr)
 
 		vim.cmd.checktime() -- reload buffer in case of changes
@@ -77,7 +76,7 @@ function M.runRecipe(recipe)
 		end
 		local pastData = {}
 
-		vim.system(justArgs(recipe, recipe.name), {
+		vim.system(recipe:justArgs(recipe.name), {
 			stdout = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 			stderr = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 		}, vim.schedule_wrap(function(out) exitOutput(recipe, out, pastData) end))
@@ -86,7 +85,7 @@ function M.runRecipe(recipe)
 
 	-- 3) DEFAULT
 	vim.system(
-		justArgs(recipe, recipe.name),
+		recipe:justArgs(recipe.name),
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime()
@@ -102,7 +101,7 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
-	local args = justArgs(recipe, "--show", recipe.name)
+	local args = recipe:justArgs("--show", recipe.name)
 	local stdout = vim.system(args):wait().stdout or "Error"
 	notify(stdout, "trace", {
 		title = recipe.name,
@@ -114,7 +113,7 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showVariables(recipe)
-	local args = justArgs(recipe, "--evaluate")
+	local args = recipe:justArgs("--evaluate")
 	local stdout = vim.system(args):wait().stdout or "Error"
 	if vim.trim(stdout) == "" then
 		notify("No variables defined.", "warn", { title = "Variables" })
