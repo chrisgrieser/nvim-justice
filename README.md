@@ -16,6 +16,7 @@ Lightweight integration of [`just`](https://github.com/casey/just) in nvim.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
 - [About the author](#about-the-author)
 
 <!-- tocstop -->
@@ -118,6 +119,44 @@ require("justice").select({
 - Navigate the window via `<Tab>` & `<S-Tab>`, select with `<CR>`.
 - **Quick-select** recipes via keys shown at the left of the window.
 - Show recipe via `<Space>`.
+
+## Using progress bars and streaming output
+Here is an example of a `just` recipe that displays a simple progress bar. 
+
+This kind of progress bar works the same when triggered in the terminal via
+`just demo-progressbar` and via `nivm-justic`.
+
+```just
+# streaming <-- makes nvim-justice stream the output
+demo-progressbar:
+    #!/usr/bin/env zsh
+    char="+"
+    progress=""
+    for i in {1..20}; do
+        progress="$progress$char"
+		printf "\33[2K\r" # `\33[2K` fully erase the line, `\r` moves to the BoL
+        printf "$progress" # printf (or `echo -n`) needed to not create a newline
+        sleep 0.1
+    done
+    printf "\33[2K\r"
+    echo "Done."
+```
+
+Note this version of a progress bar works in the terminal, but will not work in
+`nvim-justice`, since the plugin prints every unit of data individually.
+
+```just
+# streaming
+progressbar_not_working_in_nvim-justice:
+    #!/usr/bin/env zsh
+    char="+"
+    for i in {1..20}; do
+        printf "$char"
+        sleep 0.1
+    done
+    printf "\33[2K\r"
+    echo "Done."
+```
 
 ## About the author
 In my day job, I am a sociologist studying the social mechanisms underlying the
