@@ -7,39 +7,42 @@ local Recipe = {
 	name = "",
 	comment = "",
 	displayText = "",
-
+	---@type string[]
+	attributes = {},
 	---@type "streaming"|"quickfix"|"ignore"|nil
 	type = nil,
 	---@type string?
 	justfile = nil,
 
 	---@return Justice.Recipe
-	new = function(self, values)
-		setmetatable(values, self) -- https://www.lua.org/pil/16.1.html
-		self.__index = self
+	new = function(self, newObj)
+		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
+
+		-- vim.json.decode() returns `vim.NIL` for `null` values
+		if newObj.comment == vim.NIL then newObj.comment = nil end
 
 		-- display text
 		local config = require("justice.config").config
 		local displayComment = ""
-		if values.comment then
+		if newObj.comment then
 			local max = config.window.recipeCommentMaxLen
-			if #values.comment > max then displayComment = values.comment:sub(1, max) .. "…" end
+			if #newObj.comment > max then displayComment = newObj.comment:sub(1, max) .. "…" end
 		end
-		values.displayText = vim.trim(values.name .. "  " .. displayComment)
+		newObj.displayText = vim.trim(newObj.name .. "  " .. displayComment)
 
 		-- recipe type
 		for key, pattern in pairs(config.recipes) do
 			local ignoreName = vim.iter(pattern.name)
-				:any(function(pat) return values.name:find(pat) ~= nil end)
+				:any(function(pat) return newObj.name:find(pat) ~= nil end)
 			local ignoreCom = vim.iter(pattern.comment)
-				:any(function(pat) return (values.comment or ""):find(pat) ~= nil end)
+				:any(function(pat) return (newObj.comment or ""):find(pat) ~= nil end)
 			if ignoreName or ignoreCom then
-				values.type = key
+				newObj.type = key
 				break
 			end
 		end
 
-		return values
+		return newObj
 	end,
 
 	---@param self Justice.Recipe
@@ -64,10 +67,8 @@ function M.get(opts)
 	local args = {
 		"just",
 		opts.justfile and "--justfile=" .. opts.justfile or nil,
-		"--list",
-		"--unsorted",
-		"--list-heading=",
-		"--list-prefix=",
+		"--dump",
+		"--dump-format=json",
 	}
 	args = vim.tbl_filter(function(a) return a end, args) -- remove nils
 
@@ -76,17 +77,17 @@ function M.get(opts)
 		notify(result.stderr, "error")
 		return
 	end
-	local stdout = vim.split(result.stdout, "\n", { trimempty = true })
 
-	local recipes = vim.iter(stdout)
-		:map(function(line)
-			local name, comment = line:match("^(%S+)%s*# (.+)")
-			if not name then name = line:match("^%S+") end
-			return Recipe:new {
-				name = name,
-				comment = comment,
+	local justDump = vim.json.decode(result.stdout)
+	local recipes = vim.iter(justDump.recipes)
+		:map(function(key, value)
+			local r = Recipe:new {
+				name = key,
+				comment = value.doc,
+				attributes = value.attributes, -- not used yet, just saved for future use
 				justfile = opts.justfile,
 			}
+			return r
 		end)
 		:totable()
 	return recipes
