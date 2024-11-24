@@ -32,8 +32,12 @@ function M.runRecipe(recipe)
 			return
 		end
 		local lastData = ""
-		local function bufferedOut(_, data)
+		local function stream(_, data)
 			if not data then return end
+			-- remove special escape sequence `\33[2K` which erases the line in the
+			-- Terminal, but is only clutter in nvim
+			data = data:gsub("%[2K", "")
+
 			-- severity not determined by stderr, as many CLIs send non-errors to it
 			local severity = "trace"
 			if data:lower():find("warn") then severity = "warn" end
@@ -43,7 +47,7 @@ function M.runRecipe(recipe)
 		end
 		vim.system(
 			justArgs(recipe, recipe.name),
-			{ stdout = bufferedOut, stderr = bufferedOut },
+			{ stdout = stream, stderr = stream },
 			vim.schedule_wrap(function(out)
 				local text = (out.stdout or "") .. (out.stderr or "")
 				if vim.trim(text) == "" then text = lastData end
