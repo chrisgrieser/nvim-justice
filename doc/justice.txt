@@ -9,6 +9,7 @@ Table of Contents                                  *justice-table-of-contents*
   - Installation                          |justice-nvim-justice--installation|
   - Configuration                        |justice-nvim-justice--configuration|
   - Usage                                        |justice-nvim-justice--usage|
+  - Using progress bars and streaming output|justice-nvim-justice--using-progress-bars-and-streaming-output|
   - About the author                  |justice-nvim-justice--about-the-author|
 
 ==============================================================================
@@ -27,6 +28,7 @@ TABLE OF CONTENTS                    *justice-nvim-justice--table-of-contents*
 - |justice-installation|
 - |justice-configuration|
 - |justice-usage|
+- |justice-using-progress-bars-and-streaming-output|
 - |justice-about-the-author|
 
 
@@ -132,6 +134,46 @@ USAGE                                            *justice-nvim-justice--usage*
 - Navigate the window via `<Tab>` & `<S-Tab>`, select with `<CR>`.
 - **Quick-select** recipes via keys shown at the left of the window.
 - Show recipe via `<Space>`.
+
+
+USING PROGRESS BARS AND STREAMING OUTPUT*justice-nvim-justice--using-progress-bars-and-streaming-output*
+
+Here is an example of a `just` recipe that displays a simple progress bar.
+
+This kind of progress bar works the same when triggered in the terminal via
+`just demo-progressbar` and via `nivm-justic`.
+
+>just
+    # streaming <-- makes nvim-justice stream the output
+    demo-progressbar:
+        #!/usr/bin/env zsh
+        char="+"
+        progress=""
+        for i in {1..20}; do
+            progress="$progress$char"
+            printf "\33[2K\r" # `\33[2K` fully erase the line, `\r` moves to the BoL
+            printf "$progress" # printf (or `echo -n`) needed to not create a newline
+            sleep 0.1
+        done
+        printf "\33[2K\r"
+        echo "Done."
+<
+
+Note this version of a progress bar works in the terminal, but will not work in
+`nvim-justice`, since the plugin prints every unit of data individually.
+
+>just
+    # streaming
+    progressbar_not_working_in_nvim-justice:
+        #!/usr/bin/env zsh
+        char="+"
+        for i in {1..20}; do
+            printf "$char"
+            sleep 0.1
+        done
+        printf "\33[2K\r"
+        echo "Done."
+<
 
 
 ABOUT THE AUTHOR                      *justice-nvim-justice--about-the-author*
