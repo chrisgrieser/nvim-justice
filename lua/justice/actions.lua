@@ -1,6 +1,50 @@
 local M = {}
+
 local notify = require("justice.utils").notify
 local justArgs = require("justice.utils").justArgs
+--------------------------------------------------------------------------------
+
+---@param recipe Justice.Recipe
+---@param data string
+---@param pastData string[]
+---@return string[] updated pastData
+---@nodiscard
+local function streamOutput(recipe, data, pastData)
+	if not data or vim.trim(data) == "" then return pastData end
+	-- remove special escape sequence `\33[2K` which erases the line in the
+	-- Terminal, but is only clutter in nvim
+	data = vim.trim(data):gsub("%[2K", "")
+
+	-- severity not determined by being stderr, as many CLIs send non-errors to it
+	local severity = "trace"
+	if data:lower():find("warn") then severity = "warn" end
+	if data:lower():find("error") then severity = "error" end
+	notify(data, severity, { title = recipe.name })
+	table.insert(pastData, data)
+	return pastData
+end
+
+---@param recipe Justice.Recipe
+---@param out vim.SystemCompleted
+---@param pastData string[]
+local function exitOutput(recipe, out, pastData)
+	local text = (out.stdout or "") .. (out.stderr or "")
+	if out.code ~= 0 then
+		local justErrMsg = table.remove(pastData)
+		local lastMsg = table.remove(pastData)
+		text = vim.trim(lastMsg .. "\n" .. justErrMsg .. text)
+	elseif vim.trim(text) == "" then
+		text = table.remove(pastData)
+	end
+
+	-- change the severity of the last notification as additional visual
+	-- indicator that the task is complete
+	local severity = out.code == 0 and "info" or "error"
+
+	notify(text, severity, { title = recipe.name })
+	vim.cmd.checktime()
+end
+
 --------------------------------------------------------------------------------
 
 ---@param recipe Justice.Recipe
@@ -31,33 +75,12 @@ function M.runRecipe(recipe)
 			notify(msg, "error", { title = recipe.name })
 			return
 		end
-		local lastData = ""
-		local function stream(_, data)
-			if not data then return end
-			-- remove special escape sequence `\33[2K` which erases the line in the
-			-- Terminal, but is only clutter in nvim
-			data = data:gsub("%[2K", "")
+		local pastData = {}
 
-			-- severity not determined by stderr, as many CLIs send non-errors to it
-			local severity = "trace"
-			if data:lower():find("warn") then severity = "warn" end
-			if data:lower():find("error") then severity = "error" end
-			notify(data, severity, { title = recipe.name })
-			lastData = data
-		end
-		vim.system(
-			justArgs(recipe, recipe.name),
-			{ stdout = stream, stderr = stream },
-			vim.schedule_wrap(function(out)
-				local text = (out.stdout or "") .. (out.stderr or "")
-				if vim.trim(text) == "" then text = lastData end
-				-- change the severity of the last notification as additional visual
-				-- indicator that the task is complete
-				local severity = out.code == 0 and "info" or "error"
-				notify(text, severity, { title = recipe.name })
-				vim.cmd.checktime()
-			end)
-		)
+		vim.system(justArgs(recipe, recipe.name), {
+			stdout = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
+			stderr = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
+		}, vim.schedule_wrap(function(out) exitOutput(recipe, out, pastData) end))
 		return
 	end
 
@@ -74,6 +97,8 @@ function M.runRecipe(recipe)
 		end)
 	)
 end
+
+--------------------------------------------------------------------------------
 
 ---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
