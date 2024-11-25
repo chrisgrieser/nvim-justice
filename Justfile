@@ -1,10 +1,5 @@
 set quiet := true
 
-demo-failure:
-    echo "yes"
-    sleep 0.1
-    exit 1
-
 # streaming
 demo-progressbar:
     #!/usr/bin/env zsh
@@ -18,3 +13,9 @@ demo-progressbar:
     done
     printf "\33[2K\r"
     echo "Done."
+
+demo-failure:
+    echo "yes"
+    sleep 0.1
+    exit 1
+

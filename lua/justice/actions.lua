@@ -9,10 +9,11 @@ local notify = require("justice.utils").notify
 ---@return string[] updated pastData
 ---@nodiscard
 local function streamOutput(recipe, data, pastData)
-	if not data or vim.trim(data) == "" then return pastData end
+	if not data then return pastData end
 	-- remove special escape sequence `\33[2K` which erases the line in the
 	-- Terminal, but is only clutter in nvim
-	data = vim.trim(data):gsub("%[2K", "")
+	data = vim.trim(data:gsub("%[2K", ""))
+	if data == "" then return pastData end -- if line was erased, keep previous text
 
 	-- severity not determined by being stderr, as many CLIs send non-errors to it
 	local severity = "trace"
