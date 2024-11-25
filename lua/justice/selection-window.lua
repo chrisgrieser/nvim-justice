@@ -16,17 +16,18 @@ function M.select(allRecipes)
 	-- prepare recipes for display
 	local recipes = vim.tbl_filter(function(r) return r.type ~= "ignore" end, allRecipes)
 	if #recipes == 0 then
-		notify("Justfile has no recipes.", "warn")
+		notify("After applying `recipes.ignore`, there are no left to choose from.", "warn")
 		return
 	end
 	local ignoreCount = #allRecipes - #recipes
 	local displayLines = vim.tbl_map(function(r) return r.displayText end, recipes)
 
 	-- calculate window size
-	local longestRecipe = math.max(unpack(vim.tbl_map(function(r)
-		local iconWidth = r.type and #config.icons[r.type] + 2 or 0
-		return #r.displayText + iconWidth
-	end, recipes)))
+	local longestRecipe = vim.iter(recipes):fold(0, function(acc, r)
+		local iconWidth = r.type and #config.icons[r.type] or 0
+		local width = #r.displayText + iconWidth
+		return math.max(acc, width)
+	end)
 	local quickKeyWidth = 2
 	local winWidth = math.max(longestRecipe, vim.api.nvim_strwidth(title)) + quickKeyWidth + 1
 	local winHeight = math.min(#recipes, vim.api.nvim_win_get_height(0))
