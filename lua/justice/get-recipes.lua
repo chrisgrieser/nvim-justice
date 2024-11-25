@@ -14,32 +14,31 @@ local Recipe = {
 	justfile = nil,
 
 	---@return Justice.Recipe
-	new = function(self, values)
-		setmetatable(values, self) -- https://www.lua.org/pil/16.1.html
-		self.__index = self
+	new = function(self, newObj)
+		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
 
 		-- display text
 		local config = require("justice.config").config
 		local displayComment = ""
-		if values.comment then
+		if newObj.comment then
 			local max = config.window.recipeCommentMaxLen
-			if #values.comment > max then displayComment = values.comment:sub(1, max) .. "…" end
+			if #newObj.comment > max then displayComment = newObj.comment:sub(1, max) .. "…" end
 		end
-		values.displayText = vim.trim(values.name .. "  " .. displayComment)
+		newObj.displayText = vim.trim(newObj.name .. "  " .. displayComment)
 
 		-- recipe type
 		for key, pattern in pairs(config.recipes) do
 			local ignoreName = vim.iter(pattern.name)
-				:any(function(pat) return values.name:find(pat) ~= nil end)
+				:any(function(pat) return newObj.name:find(pat) ~= nil end)
 			local ignoreCom = vim.iter(pattern.comment)
-				:any(function(pat) return (values.comment or ""):find(pat) ~= nil end)
+				:any(function(pat) return (newObj.comment or ""):find(pat) ~= nil end)
 			if ignoreName or ignoreCom then
-				values.type = key
+				newObj.type = key
 				break
 			end
 		end
 
-		return values
+		return newObj
 	end,
 
 	---@param self Justice.Recipe
