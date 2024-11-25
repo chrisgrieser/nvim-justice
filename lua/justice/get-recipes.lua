@@ -7,42 +7,39 @@ local Recipe = {
 	name = "",
 	comment = "",
 	displayText = "",
-	---@type string[]
-	attributes = {},
+
 	---@type "streaming"|"quickfix"|"ignore"|nil
 	type = nil,
 	---@type string?
 	justfile = nil,
 
 	---@return Justice.Recipe
-	new = function(self, newObj)
-		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
-
-		-- vim.json.decode() returns `vim.NIL` for `null` values
-		if newObj.comment == vim.NIL then newObj.comment = nil end
+	new = function(self, values)
+		setmetatable(values, self) -- https://www.lua.org/pil/16.1.html
+		self.__index = self
 
 		-- display text
 		local config = require("justice.config").config
 		local displayComment = ""
-		if newObj.comment then
+		if values.comment then
 			local max = config.window.recipeCommentMaxLen
-			if #newObj.comment > max then displayComment = newObj.comment:sub(1, max) .. "…" end
+			if #values.comment > max then displayComment = values.comment:sub(1, max) .. "…" end
 		end
-		newObj.displayText = vim.trim(newObj.name .. "  " .. displayComment)
+		values.displayText = vim.trim(values.name .. "  " .. displayComment)
 
 		-- recipe type
 		for key, pattern in pairs(config.recipes) do
 			local ignoreName = vim.iter(pattern.name)
-				:any(function(pat) return newObj.name:find(pat) ~= nil end)
+				:any(function(pat) return values.name:find(pat) ~= nil end)
 			local ignoreCom = vim.iter(pattern.comment)
-				:any(function(pat) return (newObj.comment or ""):find(pat) ~= nil end)
+				:any(function(pat) return (values.comment or ""):find(pat) ~= nil end)
 			if ignoreName or ignoreCom then
-				newObj.type = key
+				values.type = key
 				break
 			end
 		end
 
-		return newObj
+		return values
 	end,
 
 	---@param self Justice.Recipe
@@ -64,11 +61,15 @@ function M.get(opts)
 	-- in case user is currently editing a Justfile
 	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
 
+	-- NOTE not using `just --dump --dump-format=json` because it does not
+	-- preserve the order of recipes https://github.com/casey/just/issues/1552
 	local args = {
 		"just",
 		opts.justfile and "--justfile=" .. opts.justfile or nil,
-		"--dump",
-		"--dump-format=json",
+		"--list",
+		"--unsorted",
+		"--list-heading=",
+		"--list-prefix=",
 	}
 	args = vim.tbl_filter(function(a) return a end, args) -- remove nils
 
@@ -77,17 +78,17 @@ function M.get(opts)
 		notify(result.stderr, "error")
 		return
 	end
+	local stdout = vim.split(result.stdout, "\n", { trimempty = true })
 
-	local justDump = vim.json.decode(result.stdout)
-	local recipes = vim.iter(justDump.recipes)
-		:map(function(key, value)
-			local r = Recipe:new {
-				name = key,
-				comment = value.doc,
-				attributes = value.attributes, -- not used yet, just saved for future use
+	local recipes = vim.iter(stdout)
+		:map(function(line)
+			local name, comment = line:match("^(%S+)%s*# (.+)")
+			if not name then name = line:match("^%S+") end
+			return Recipe:new {
+				name = name,
+				comment = comment,
 				justfile = opts.justfile,
 			}
-			return r
 		end)
 		:totable()
 	return recipes
