@@ -1,7 +1,11 @@
 *nvim-justice.txt*           For Neovim          Last change: 2024 November 26
 
 ==============================================================================
-1. nvim-justice                                   *nvim-justice-nvim-justice-*
+Table of Contents                             *nvim-justice-table-of-contents*
+
+  - nvim-justice                                  |nvim-justice-nvim-justice-|
+
+NVIM-JUSTICE                                      *nvim-justice-nvim-justice-*
 
 
 
@@ -10,7 +14,7 @@ Lightweightintegration of `just` <https://github.com/casey/just> in nvim.
 
 
 
-TABLE OF CONTENTS               *nvim-justice-nvim-justice--table-of-contents*
+TABLE OF CONTENTS ~
 
 - |nvim-justice-features|
 - |nvim-justice-installation|
@@ -20,7 +24,7 @@ TABLE OF CONTENTS               *nvim-justice-nvim-justice--table-of-contents*
 - |nvim-justice-about-the-author|
 
 
-FEATURES                                 *nvim-justice-nvim-justice--features*
+FEATURES ~
 
 - **Quick-select** recipes via keys shown at the left of the window. Running
     recipes thus requires only 2–3 keystrokes.
@@ -33,7 +37,7 @@ FEATURES                                 *nvim-justice-nvim-justice--features*
     input.
 
 
-INSTALLATION                         *nvim-justice-nvim-justice--installation*
+INSTALLATION ~
 
 **Requirements** - nvim 0.10+ - just <https://github.com/casey/just> -
 _optional:_ snacks.nvim <http://github.com/folke/snacks.nvim> (required for
@@ -57,7 +61,7 @@ streaming output) - _optional:_ Treesitter parser for syntax highlighting
 <
 
 
-CONFIGURATION                       *nvim-justice-nvim-justice--configuration*
+CONFIGURATION ~
 
 The `setup` call is optional.
 
@@ -107,7 +111,7 @@ The `setup` call is optional.
 <
 
 
-USAGE                                       *nvim-justice-nvim-justice--usage*
+USAGE ~
 
 >lua
     -- basic usage
@@ -124,7 +128,7 @@ USAGE                                       *nvim-justice-nvim-justice--usage*
 - Show recipe via `<Space>`.
 
 
-USING PROGRESS BARS AND STREAMING OUTPUT*nvim-justice-nvim-justice--using-progress-bars-and-streaming-output*
+USING PROGRESS BARS AND STREAMING OUTPUT ~
 
 Here is an example of a `just` recipe that displays a simple progress bar.
 
@@ -164,7 +168,7 @@ Note this version of a progress bar works in the terminal, but will not work in
 <
 
 
-ABOUT THE AUTHOR                 *nvim-justice-nvim-justice--about-the-author*
+ABOUT THE AUTHOR ~
 
 In my day job, I am a sociologist studying the social mechanisms underlying the
 digital economy. For my PhD project, I investigate the governance of the app
