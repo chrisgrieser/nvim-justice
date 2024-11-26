@@ -29,7 +29,6 @@ jobs:
           version: "Neovim"
           demojify: true
           treesitter: true
-          shiftheadinglevelby: 1
 
       - run: git pull
       - name: push changes
