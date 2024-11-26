@@ -14,8 +14,17 @@ demo-progressbar:
     printf "\33[2K\r"
     echo "Done."
 
+# quickfix
+demo-quickfix:
+    rg --vimgrep "local"
+
 demo-failure:
-    echo "yes"
+    echo "failure"
     sleep 0.1
     exit 1
+
+demo-success:
+    echo "success"
+    sleep 0.1
+    exit 0
 
