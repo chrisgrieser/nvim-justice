@@ -56,8 +56,9 @@ function M.runRecipe(recipe)
 		local prev = vim.bo.makeprg
 
 		vim.bo.makeprg = "just"
-		local argsStr = table.concat(recipe:justArgs(recipe.name), " ")
-		vim.cmd.make(argsStr)
+		local args = recipe:justArgs(recipe.name)
+		table.remove(args, 1) -- remove "just", since already in makeprg
+		vim.cmd.make(table.concat(args, " "))
 
 		vim.cmd.checktime() -- reload buffer in case of changes
 		vim.bo.makeprg = prev
