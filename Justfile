@@ -1,3 +1,8 @@
+# INFO
+# This file is for testing and demonstration purposes only. The recipes do not
+# perform any actually useful actions.
+#───────────────────────────────────────────────────────────────────────────────
+
 set quiet := true
 
 # streaming
@@ -19,11 +24,13 @@ demo-quickfix:
     rg --vimgrep "local"
 
 demo-failure:
+    #!/usr/bin/env zsh
     echo "failure"
     sleep 0.1
     exit 1
 
 demo-success:
+    #!/usr/bin/env zsh
     echo "success"
     sleep 0.1
     exit 0
