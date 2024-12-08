@@ -4,7 +4,7 @@
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-justice">
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-justice/shield"/></a>
 
-Lightweight integration of [`just`](https://github.com/casey/just) in nvim.
+Just an integration of [`just`](https://github.com/casey/just) in nvim.
 
 <img alt="Showcase" width=50% src="https://github.com/user-attachments/assets/ae011582-61b2-41d0-b479-cc5eb9b1427d">
 
