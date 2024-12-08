@@ -1,4 +1,4 @@
-*nvim-justice.txt*           For Neovim          Last change: 2024 November 26
+*nvim-justice.txt*           For Neovim          Last change: 2024 December 08
 
 ==============================================================================
 Table of Contents                             *nvim-justice-table-of-contents*
@@ -17,7 +17,7 @@ Table of Contents                             *nvim-justice-table-of-contents*
 
 
 
-Lightweightintegration of `just` <https://github.com/casey/just> in nvim.
+Justan integration of `just` <https://github.com/casey/just> in nvim.
 
 
 
