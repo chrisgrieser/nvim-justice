@@ -8,7 +8,7 @@ local Recipe = {
 	comment = "",
 	displayText = "",
 
-	---@type "streaming"|"quickfix"|"ignore"|nil
+	---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
 	type = nil,
 	---@type string?
 	justfile = nil,

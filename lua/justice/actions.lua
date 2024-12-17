@@ -67,7 +67,9 @@ function M.runRecipe(recipe)
 	end
 
 	-- PRE-RUN NOTIFICATION
-	if package.loaded["snacks"] then u.showRunningNotification(recipe) end
+	if package.loaded["snacks"] and recipe.type ~= "terminal" then
+		u.showRunningNotification(recipe)
+	end
 
 	-- 2) STREAMING
 	if recipe.type == "streaming" then
@@ -85,7 +87,20 @@ function M.runRecipe(recipe)
 		return
 	end
 
-	-- 3) DEFAULT
+	-- 3) TERMINAL
+	if recipe.type == "terminal" then
+		vim.cmd.new() -- bottom split new window
+		vim.cmd.terminal()
+		local height = require("justice.config").config.terminal.height
+		vim.api.nvim_win_set_height(0, height)
+
+		local argStr = table.concat(recipe:justArgs(recipe.name), " ")
+		vim.api.nvim_chan_send(vim.bo.channel, argStr .. "\n") -- `\n` to send
+		vim.cmd.startinsert { bang = true }
+		return
+	end
+
+	-- 4) DEFAULT
 	vim.system(
 		recipe:justArgs(recipe.name),
 		{},

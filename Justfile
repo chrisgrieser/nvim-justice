@@ -35,3 +35,10 @@ demo-success:
     sleep 0.1
     exit 0
 
+# asks for input
+demo-in-terminal:
+    #!/usr/bin/env zsh
+    echo "Enter something: "
+    read -r input
+    echo
+    echo "Input was: $input"

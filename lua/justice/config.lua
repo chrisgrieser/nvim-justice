@@ -6,18 +6,25 @@ local defaultConfig = {
 	recipes = {
 		-- All strings are checked via `string.find`, that is as lua patterns.
 		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
-		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- ...if the name contains "fzf" or starts with "_"
-			comment = { "interactive" }, -- ...if the comment contains "interactive"
-		},
-		streaming = { -- streams output, e.g. for progress bars (requires `snacks.nvim`)
+		streaming = { -- streams output, useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
-			comment = { "streaming", "curl" }, -- comment with "streaming" or "curl"
+			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
+		},
+		terminal = { -- runs in terminal, useful for recipes with input
+			name = {},
+			comment = { "input" }, 
 		},
 		quickfix = { -- runs synchronously and sends output to quickfix list
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},
+		ignore = { -- hides them from the nvim-justice selection window
+			name = { "fzf", "^_" }, -- ...if the name contains with "_"
+			comment = {},
+		},
+	},
+	terminal = {
+		height = 10,
 	},
 	keymaps = {
 		next = "<Tab>",
@@ -41,6 +48,7 @@ local defaultConfig = {
 		streaming = "ﲋ",
 		quickfix = "",
 		ignore = "󰈉",
+		terminal = "",
 	},
 }
 

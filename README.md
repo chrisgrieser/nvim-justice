@@ -24,10 +24,11 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 ## Features
 - **Quick-select** recipes via keys shown at the left of the window. Running
   recipes thus requires only 2–3 keystrokes.
-- Runs asynchronously and outputs results in a notification window.
-- Supports streaming output (e.g., for recipes that display a progress bar).
-- Can alternatively run asynchronously and send individual recipe results to the
-  **quickfix list**.
+- Different run modes
+	1. Default: **asynchronously** and outputs results in a notification window
+	2. Streaming output: useful for recipes with progress bars
+	3. Quickfix list: synchronously
+	4. Terminal: useful for recipes that require input
 - Inspect recipes and variable values.
 - Hide specific recipes, useful to always exclude recipes that require user
   input.
@@ -65,18 +66,25 @@ require("justice").setup {
 	recipes = {
 		-- All strings are checked via `string.find`, that is as lua patterns.
 		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
-		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- ...if the name contains "fzf" or starts with "_"
-			comment = { "interactive" }, -- ...if the comment contains "interactive"
-		},
-		streaming = { -- streams output, e.g. for progress bars (requires `snacks.nvim`)
+		streaming = { -- streams output, useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
-			comment = { "streaming", "curl" }, -- comment with "streaming" or "curl"
+			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
+		},
+		terminal = { -- runs in terminal, useful for recipes with input
+			name = {},
+			comment = { "input" }, 
 		},
 		quickfix = { -- runs synchronously and sends output to quickfix list
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},
+		ignore = { -- hides them from the nvim-justice selection window
+			name = { "fzf", "^_" }, -- ...if the name contains with "_"
+			comment = {},
+		},
+	},
+	terminal = {
+		height = 10,
 	},
 	keymaps = {
 		next = "<Tab>",
@@ -100,6 +108,7 @@ require("justice").setup {
 		streaming = "ﲋ",
 		quickfix = "",
 		ignore = "󰈉",
+		terminal = "",
 	},
 }
 ```
