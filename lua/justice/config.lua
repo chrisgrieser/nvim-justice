@@ -12,7 +12,7 @@ local defaultConfig = {
 		},
 		terminal = { -- runs in terminal, useful for recipes with input
 			name = {},
-			comment = { "input" }, 
+			comment = { "input" },
 		},
 		quickfix = { -- runs synchronously and sends output to quickfix list
 			name = { "%-qf$" }, -- name ending with "-qf"
