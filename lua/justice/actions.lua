@@ -1,5 +1,6 @@
 local M = {}
 
+local u = require("justice.utils")
 local notify = require("justice.utils").notify
 --------------------------------------------------------------------------------
 
@@ -66,8 +67,7 @@ function M.runRecipe(recipe)
 	end
 
 	-- PRE-RUN NOTIFICATION
-	-- only snacks.nvim supports replacing notifications
-	if package.loaded["snacks"] then notify("Running…", "trace", { title = recipe.name }) end
+	if package.loaded["snacks"] then u.showRunningNotification(recipe) end
 
 	-- 2) STREAMING
 	if recipe.type == "streaming" then
@@ -93,7 +93,6 @@ function M.runRecipe(recipe)
 			vim.cmd.checktime()
 			local text = (out.stdout or "") .. (out.stderr or "")
 			local severity = out.code == 0 and "info" or "error"
-			if vim.trim(text) == "" then return end
 			notify(text, severity, { title = recipe.name })
 		end)
 	)
