@@ -111,6 +111,10 @@ require("justice").setup {
 require("justice").select()
 ```
 
+```vim
+:Justice
+```
+
 **Keymaps**
 - Navigate the window via `<Tab>` & `<S-Tab>`.
 - Select with `<CR>`.
