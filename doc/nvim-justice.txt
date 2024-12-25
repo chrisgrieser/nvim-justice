@@ -1,4 +1,4 @@
-*nvim-justice.txt*           For Neovim          Last change: 2024 December 17
+*nvim-justice.txt*           For Neovim          Last change: 2024 December 25
 
 ==============================================================================
 Table of Contents                             *nvim-justice-table-of-contents*
@@ -147,10 +147,10 @@ USAGE                                       *nvim-justice-nvim-justice--usage*
 
 USING PROGRESS BARS AND STREAMING OUTPUT*nvim-justice-nvim-justice--using-progress-bars-and-streaming-output*
 
-Here is an example of a `just` recipe that displays a simple progress bar.
+Here is an example of a `just` recipe that displays a simple progress bar
 
 This kind of progress bar works the same when triggered in the terminal via
-`just demo-progressbar` and via `nivm-justic`.
+`just demo-progressbar` and via `nivm-justice`.
 
 >just
     # streaming <-- makes nvim-justice stream the output
