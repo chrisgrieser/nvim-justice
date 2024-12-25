@@ -130,10 +130,10 @@ require("justice").select({
 - Show recipe via `<Space>`.
 
 ## Using progress bars and streaming output
-Here is an example of a `just` recipe that displays a simple progress bar. 
+Here is an example of a `just` recipe that displays a simple progress bar
 
 This kind of progress bar works the same when triggered in the terminal via
-`just demo-progressbar` and via `nivm-justic`.
+`just demo-progressbar` and via `nivm-justice`.
 
 ```just
 # streaming <-- makes nvim-justice stream the output
