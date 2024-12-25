@@ -37,24 +37,16 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 **Requirements**
 - nvim 0.10+
 - [just](https://github.com/casey/just)
-- *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (required for
-  streaming output)
+- *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (for streaming
+  output)
 - *optional:* Treesitter parser for syntax highlighting (`:TSInstall just`)
 
 ```lua
 -- lazy.nvim
-{
-	"chrisgrieser/nvim-justice",
-	keys = {
-		{ "<leader>j", function() require("justice").select() end, desc = "Justice" },
-	},
-},
+{ "chrisgrieser/nvim-justice" },
 
 -- packer
-use {
-	"chrisgrieser/nvim-justice",
-}
-vim.keymap.set("n", "<leader>j", function() require("justice").select() end, { desc = "Justice" })
+use { "chrisgrieser/nvim-justice" }
 ```
 
 ## Configuration
@@ -116,18 +108,22 @@ require("justice").setup {
 ## Usage
 
 ```lua
--- basic usage
 require("justice").select()
+```
 
--- optionally set parameters
+**Keymaps**
+- Navigate the window via `<Tab>` & `<S-Tab>`.
+- Select with `<CR>`.
+- **Quick-select** recipes via keys shown at the left of the window.
+- Show recipe via `<Space>`.
+
+**Use with specific Justfile**
+
+```lua
 require("justice").select({
 	justfile = "path/to/custom/justfile", -- passed to `--justfile=`
 })
 ```
-
-- Navigate the window via `<Tab>` & `<S-Tab>`, select with `<CR>`.
-- **Quick-select** recipes via keys shown at the left of the window.
-- Show recipe via `<Space>`.
 
 ## Using progress bars and streaming output
 Here is an example of a `just` recipe that displays a simple progress bar
