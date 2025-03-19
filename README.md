@@ -88,7 +88,7 @@ require("justice").setup {
 		showVariables = "?",
 	},
 	window = {
-		border = "rounded",
+		border = vim.fn.has("nvim-0.11") == 1 and vim.o.winborder or "rounded",
 		recipeCommentMaxLen = 35,
 	},
 	highlights = {
