@@ -1,4 +1,5 @@
 local M = {}
+local u = require("justice.utils")
 --------------------------------------------------------------------------------
 
 local fallbackBorder = "rounded"
@@ -79,6 +80,13 @@ M.setup = function(userConfig)
 	then
 		local notify = require("justice.utils").notify
 		notify("The `recipe` configuration has changed. Please refer to the README.", "warn")
+	end
+
+	-- VALIDATE
+	if M.config.window.border == "none" or M.config.window.border == "" then
+		M.config.window.border = fallbackBorder
+		local msg = ('Border "none" is not supported, falling back to %q.'):format(fallbackBorder)
+		u.notify(msg, "warn")
 	end
 end
 
