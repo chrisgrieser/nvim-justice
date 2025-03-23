@@ -1,6 +1,17 @@
 local M = {}
 --------------------------------------------------------------------------------
 
+local fallbackBorder = "rounded"
+
+---@return string
+local function getBorder()
+	local hasWinborder, winborder = pcall(function() return vim.o.winborder end)
+	if not hasWinborder or winborder == "" or winborder == "none" then return fallbackBorder end
+	return winborder
+end
+
+--------------------------------------------------------------------------------
+
 ---@class Justice.Config
 local defaultConfig = {
 	recipes = {
@@ -36,7 +47,7 @@ local defaultConfig = {
 		showVariables = "?",
 	},
 	window = {
-		border = vim.fn.has("nvim-0.11") == 1 and vim.o.winborder or "rounded",
+		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
 		recipeCommentMaxLen = 35,
 	},
 	highlights = {
