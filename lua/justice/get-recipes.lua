@@ -44,7 +44,7 @@ local Recipe = {
 	---@param self Justice.Recipe
 	---@param ... string extra args to append
 	---@return string[] -- list of form { "just", ... }
-	justArgs = function(self, ...)
+	shellArgs = function(self, ...)
 		local args = { "just" }
 		if self.justfile then table.insert(args, "--justfile=" .. self.justfile) end
 		return vim.list_extend(args, { ... })

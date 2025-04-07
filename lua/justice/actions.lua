@@ -57,7 +57,7 @@ function M.runRecipe(recipe)
 		local prev = vim.bo.makeprg
 
 		vim.bo.makeprg = "just"
-		local args = recipe:justArgs(recipe.name)
+		local args = recipe:shellArgs(recipe.name)
 		table.remove(args, 1) -- remove "just", since already in makeprg
 		vim.cmd.make(table.concat(args, " "))
 
@@ -80,7 +80,7 @@ function M.runRecipe(recipe)
 		end
 		local pastData = {}
 
-		vim.system(recipe:justArgs(recipe.name), {
+		vim.system(recipe:shellArgs(recipe.name), {
 			stdout = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 			stderr = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 		}, vim.schedule_wrap(function(out) exitOutput(recipe, out, pastData) end))
@@ -94,7 +94,7 @@ function M.runRecipe(recipe)
 		local height = require("justice.config").config.terminal.height
 		vim.api.nvim_win_set_height(0, height)
 
-		local argStr = table.concat(recipe:justArgs(recipe.name), " ")
+		local argStr = table.concat(recipe:shellArgs(recipe.name), " ")
 		vim.api.nvim_chan_send(vim.bo.channel, argStr .. "\n") -- `\n` to send
 		vim.cmd.startinsert { bang = true }
 		return
@@ -102,7 +102,7 @@ function M.runRecipe(recipe)
 
 	-- 4) DEFAULT
 	vim.system(
-		recipe:justArgs(recipe.name),
+		recipe:shellArgs(recipe.name),
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime()
@@ -117,7 +117,7 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
-	local args = recipe:justArgs("--show", recipe.name)
+	local args = recipe:shellArgs("--show", recipe.name)
 	local stdout = vim.system(args):wait().stdout or "Error"
 	notify(stdout, "trace", {
 		title = recipe.name,
@@ -129,7 +129,7 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showVariables(recipe)
-	local args = recipe:justArgs("--evaluate")
+	local args = recipe:shellArgs("--evaluate")
 	local stdout = vim.system(args):wait().stdout or "Error"
 	if vim.trim(stdout) == "" then
 		notify("No variables defined.", "warn", { title = "Variables" })
