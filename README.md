@@ -24,13 +24,15 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 ## Features
 - **Quick-select** recipes via keys shown at the left of the window. Running
   recipes thus requires only 2–3 keystrokes.
+- As opposed to vim's builtin `:make`, always runs **asynchronously**.
 - Different run modes
-	1. Default: **asynchronously** and outputs results in a notification window
-	2. Streaming output: useful for recipes with progress bars
-	3. Quickfix list: synchronously
-	4. Terminal: useful for recipes that require input
+	1. **Default**: results are shown in a notification window
+	2. **Quickfix**: output is added to the quickfix list, using the
+	   [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
+	3. **Streaming**: useful for recipes with progress bars
+	4. **Terminal**: handy for recipes that require input
 - Inspect recipes and variable values.
-- Hide specific recipes, useful to always exclude recipes that require user
+- Hide specific recipes, helpful to always exclude recipes that require user
   input.
 
 ## Installation

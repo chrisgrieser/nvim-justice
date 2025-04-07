@@ -52,26 +52,10 @@ end
 function M.runRecipe(recipe)
 	vim.cmd("silent! update")
 
-	-- 1) QUICKFIX
-	if recipe.type == "quickfix" then
-		local prev = vim.bo.makeprg
-
-		vim.bo.makeprg = "just"
-		local args = recipe:shellArgs(recipe.name)
-		table.remove(args, 1) -- remove "just", since already in makeprg
-		vim.cmd.make(table.concat(args, " "))
-
-		vim.cmd.checktime() -- reload buffer in case of changes
-		vim.bo.makeprg = prev
-		return
-	end
-
 	-- PRE-RUN NOTIFICATION
-	if package.loaded["snacks"] and recipe.type ~= "terminal" then
-		u.showRunningNotification(recipe)
-	end
+	if recipe.type ~= "terminal" then u.showRunningNotification(recipe) end
 
-	-- 2) STREAMING
+	-- 1) STREAMING
 	if recipe.type == "streaming" then
 		if not package.loaded["snacks"] then
 			local msg = "`snacks.nvim` is required for streaming output."
@@ -87,7 +71,7 @@ function M.runRecipe(recipe)
 		return
 	end
 
-	-- 3) TERMINAL
+	-- 2) TERMINAL
 	if recipe.type == "terminal" then
 		vim.cmd.new() -- bottom split new window
 		vim.cmd.terminal()
@@ -100,15 +84,25 @@ function M.runRecipe(recipe)
 		return
 	end
 
-	-- 4) DEFAULT
+	-- 3) DEFAULT / QUICKFIX
 	vim.system(
 		recipe:shellArgs(recipe.name),
 		{},
 		vim.schedule_wrap(function(out)
-			vim.cmd.checktime()
+			vim.cmd.checktime() -- reload in case of changes
 			local text = (out.stdout or "") .. (out.stderr or "")
-			local severity = out.code == 0 and "info" or "error"
-			notify(text, severity, { title = recipe.name })
+
+			if recipe.type == "quickfix" then
+				local efm = vim.bo.efm ~= "" and vim.bo.efm or vim.o.efm
+				vim.fn.setqflist({}, " ", {
+					title = "just " .. recipe.name,
+					lines = vim.split(text, "\n"),
+					efm = efm,
+				})
+			else
+				local severity = out.code == 0 and "info" or "error"
+				notify(text, severity, { title = recipe.name })
+			end
 		end)
 	)
 end
