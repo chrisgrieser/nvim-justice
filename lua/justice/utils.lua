@@ -9,7 +9,8 @@ function M.showRunningNotification(recipe)
 end
 
 local function hideRunningNotification()
-	if package.loaded["snacks"] then require("snacks").notifier.hide("justice.running") end
+	if not package.loaded["snacks"] then return end
+	require("snacks").notifier.hide("justice.running")
 end
 
 --------------------------------------------------------------------------------
@@ -18,7 +19,7 @@ end
 ---@param level? "info"|"trace"|"debug"|"warn"|"error"
 ---@param opts? table
 function M.notify(msg, level, opts)
-	hideRunningNotification()
+	vim.schedule(hideRunningNotification)
 
 	msg = vim.trim(msg)
 	if msg == "" then return end

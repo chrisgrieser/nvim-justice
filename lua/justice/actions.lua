@@ -21,6 +21,7 @@ local function streamOutput(recipe, data, pastData)
 	if data:lower():find("warn") then severity = "warn" end
 	if data:lower():find("error") then severity = "error" end
 	notify(data, severity, { title = recipe.name })
+
 	table.insert(pastData, data)
 	return pastData
 end
