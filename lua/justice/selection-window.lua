@@ -58,7 +58,12 @@ function M.select(allRecipes)
 	-- highlight comments and add icons
 	for i = 1, #recipes do
 		if recipes[i].comment then
-			vim.api.nvim_buf_add_highlight(bufnr, ns, "Comment", i - 1, #recipes[i].name, -1)
+			if vim.hl.range then
+				vim.hl.range(bufnr, ns, "Comment", { i - 1, #recipes[i].name }, { i - 1, -1 })
+			else
+				---@diagnostic disable-next-line: deprecated -- backwards compatibility
+				vim.api.nvim_buf_add_highlight(bufnr, ns, "Comment", i - 1, #recipes[i].name, -1)
+			end
 		end
 		if recipes[i].type then
 			local icon = config.icons[recipes[i].type]
