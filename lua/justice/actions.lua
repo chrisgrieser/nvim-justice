@@ -15,6 +15,7 @@ local function streamOutput(recipe, data, pastData)
 	-- Terminal, but is only clutter in nvim
 	data = vim.trim(data:gsub("%[2K", ""))
 	if data == "" then return pastData end -- if line was erased, keep previous text
+	data = data:gsub("\r", "\n")
 
 	-- severity not determined by being stderr, as many CLIs send non-errors to it
 	local severity = "trace"
@@ -30,7 +31,7 @@ end
 ---@param out vim.SystemCompleted
 ---@param pastData string[]
 local function exitOutput(recipe, out, pastData)
-	local text = (out.stdout or "") .. (out.stderr or "")
+	local text = ((out.stdout or "") .. (out.stderr or "")):gsub("\r", "\n")
 	if out.code ~= 0 then
 		local justErrMsg = table.remove(pastData)
 		local lastMsg = table.remove(pastData)
@@ -91,8 +92,7 @@ function M.runRecipe(recipe)
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime() -- reload in case of changes
-			local text = (out.stdout or "") .. (out.stderr or "")
-
+			local text = ((out.stdout or "") .. (out.stderr or "")):gsub("\r", "\n")
 			if recipe.type == "quickfix" then
 				local efm = vim.bo.efm ~= "" and vim.bo.efm or vim.o.efm
 				vim.fn.setqflist({}, " ", {
