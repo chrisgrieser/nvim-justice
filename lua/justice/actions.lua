@@ -114,6 +114,7 @@ function M.runRecipe(recipe)
 					lines = vim.split(text, "\n"),
 					efm = efm,
 				})
+				vim.api.nvim_exec_autocmds("QuickFixCmdPost", {})
 			else
 				local severity = out.code == 0 and "info" or "error"
 				notify(text, severity, { title = recipe.name })
