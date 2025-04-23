@@ -66,7 +66,7 @@ require("justice").setup {
 		},
 		terminal = { -- runs in terminal, useful for recipes with input
 			name = {},
-			comment = { "input" }, 
+			comment = { "input" },
 		},
 		quickfix = { -- runs synchronously and sends output to quickfix list
 			name = { "%-qf$" }, -- name ending with "-qf"
@@ -83,18 +83,19 @@ require("justice").setup {
 	keymaps = {
 		next = "<Tab>",
 		prev = "<S-Tab>",
-		runRecipe = "<CR>",
+		runRecipeUnderCursor = "<CR>",
+		runFirstRecipe = "1",
 		closeWin = { "q", "<Esc>" },
-		quickSelect = { "f", "d", "s", "a" },
 		showRecipe = "<Space>",
 		showVariables = "?",
+		ignoreAsQuickfixKey = { "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
 		recipeCommentMaxLen = 35,
 	},
 	highlights = {
-		quickSelect = "Conditional",
+		quickSelect = "IncSearch",
 		icons = "Function",
 	},
 	icons = {
@@ -153,8 +154,8 @@ demo-progressbar:
     echo "Done."
 ```
 
-Note this version of a progress bar works in the terminal, but will not work in
-`nvim-justice`, since the plugin prints every unit of data individually.
+Note the following version of a progress bar works in the terminal, but will not
+work in `nvim-justice`, since the plugin prints every unit of data individually.
 
 ```just
 # streaming

@@ -41,18 +41,19 @@ local defaultConfig = {
 	keymaps = {
 		next = "<Tab>",
 		prev = "<S-Tab>",
-		runRecipe = "<CR>",
+		runRecipeUnderCursor = "<CR>",
+		runFirstRecipe = "1",
 		closeWin = { "q", "<Esc>" },
-		quickSelect = { "f", "d", "s", "a" },
 		showRecipe = "<Space>",
 		showVariables = "?",
+		ignoreAsQuickfixKey = { "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
 		recipeCommentMaxLen = 35,
 	},
 	highlights = {
-		quickSelect = "Conditional",
+		quickSelect = "IncSearch",
 		icons = "Function",
 	},
 	icons = {
@@ -72,14 +73,27 @@ M.config = defaultConfig
 M.setup = function(userConfig)
 	M.config = vim.tbl_deep_extend("force", defaultConfig, userConfig or {})
 
-	-- DEPRECATION
+	-- DEPRECATION (2024-11-23)
 	if
 		M.config.recipes.ignore[1]
 		or M.config.recipes.streaming[1]
 		or M.config.recipes.quickfix[1]
 	then
-		local notify = require("justice.utils").notify
-		notify("The `recipe` configuration has changed. Please refer to the README.", "warn")
+		u.notify("The `recipe` configuration has changed. Please refer to the README.", "warn")
+	end
+
+	-- DEPRECATION (2025-04-23)
+	if M.config.keymaps.runRecipe then
+		local msg = "Config `keymaps.runRecipe` has been renamed to `keymaps.runRecipeUnderCursor`."
+		u.notify(msg, "warn")
+		M.config.keymaps.runRecipeUnderCursor = M.config.keymaps.runRecipe
+		M.config.keymaps.runRecipe = nil -- prevent adding to `keysUsed`
+	end
+	if M.config.keymaps.quickSelect then
+		local msg =
+			"Config `keymaps.quickSelect` is now obsolete, keys are determined dynamically via recipe name."
+		u.notify(msg, "warn")
+		M.config.keymaps.quickSelect = nil -- prevent adding to `keysUsed`
 	end
 
 	-- VALIDATE

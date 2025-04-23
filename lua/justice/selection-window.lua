@@ -3,10 +3,6 @@ local notify = require("justice.utils").notify
 local actions = require("justice.actions")
 --------------------------------------------------------------------------------
 
----@return integer
----@nodiscard
-local function lnum() return vim.api.nvim_win_get_cursor(0)[1] end
-
 ---@param allRecipes Justice.Recipe[]
 function M.select(allRecipes)
 	local config = require("justice.config").config
@@ -14,13 +10,13 @@ function M.select(allRecipes)
 	local title = " " .. vim.trim(config.icons.just .. " Justfile") .. " "
 
 	-- prepare recipes for display
-	local recipes = vim.tbl_filter(function(r) return r.type ~= "ignore" end, allRecipes)
+	local recipes = vim.tbl_filter(function(r) return r.type ~= "ignore" end, allRecipes) --[[@as Justice.Recipe[] ]]
 	if #recipes == 0 then
 		notify("After applying `recipes.ignore`, there are no left to choose from.", "warn")
 		return
 	end
 	local ignoreCount = #allRecipes - #recipes
-	local displayLines = vim.tbl_map(function(r) return r.displayText end, recipes)
+	local displayLines = vim.tbl_map(function(r) return " " .. r.displayText end, recipes)
 
 	-- calculate window size
 	local longestRecipe = vim.iter(recipes):fold(0, function(acc, r)
@@ -59,7 +55,7 @@ function M.select(allRecipes)
 	for i = 1, #recipes do
 		if recipes[i].comment then
 			if vim.hl.range then
-				vim.hl.range(bufnr, ns, "Comment", { i - 1, #recipes[i].name }, { i - 1, -1 })
+				vim.hl.range(bufnr, ns, "Comment", { i - 1, #recipes[i].name + 1 }, { i - 1, -1 })
 			else
 				---@diagnostic disable-next-line: deprecated -- backwards compatibility
 				vim.api.nvim_buf_add_highlight(bufnr, ns, "Comment", i - 1, #recipes[i].name, -1)
@@ -67,63 +63,54 @@ function M.select(allRecipes)
 		end
 		if recipes[i].type then
 			local icon = config.icons[recipes[i].type]
-			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, #recipes[i].name, {
+			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, #recipes[i].name + 1, {
 				virt_text = { { " " .. icon .. " ", config.highlights.icons } },
 				virt_text_pos = "inline",
 			})
 		end
 	end
 
-	-- general keymaps
+	-- KEYMAPS
 	local function closeWin()
 		vim.api.nvim_win_close(winnr, true)
 		if package.loaded["snacks"] then require("snacks").notifier.hide("just-recipe") end
 	end
-	local opts = { buffer = bufnr, nowait = true }
-	local optsExpr = vim.tbl_extend("force", opts, { expr = true })
-	for _, key in pairs(config.keymaps.closeWin) do
-		vim.keymap.set("n", key, closeWin, opts)
-	end
-	vim.keymap.set("n", config.keymaps.next, function()
-		if lnum() == #recipes then return "gg" end -- wrap
-		return "j"
-	end, optsExpr)
-	vim.keymap.set("n", config.keymaps.prev, function()
-		if lnum() == 1 then return "G" end -- wrap
-		return "k"
-	end, optsExpr)
-	vim.keymap.set("n", config.keymaps.runRecipe, function()
-		local ln = lnum() -- save now, since not available after window closed
+	local function runRecipe(ln)
 		closeWin() -- close before run, so early notifications are not hidden
 		actions.runRecipe(recipes[ln])
-	end, opts)
-	vim.keymap.set(
-		"n",
-		config.keymaps.showRecipe,
-		function() actions.showRecipe(recipes[lnum()]) end,
-		opts
-	)
-	vim.keymap.set(
-		"n",
-		config.keymaps.showVariables,
-		function() actions.showVariables(recipes[lnum()]) end,
-		opts
-	)
+	end
+	local function lnum() return vim.api.nvim_win_get_cursor(0)[1] end
+	local function map(key, func) vim.keymap.set("n", key, func, { buffer = bufnr, nowait = true }) end
+
+	-- general keymaps
+	for _, key in pairs(config.keymaps.closeWin) do
+		map(key, closeWin)
+	end
+	map(config.keymaps.next, function() vim.cmd.normal { "j", bang = true } end)
+	map(config.keymaps.prev, function() vim.cmd.normal { "k", bang = true } end)
+	map(config.keymaps.runRecipeUnderCursor, function() runRecipe(lnum()) end)
+	map(config.keymaps.runFirstRecipe, function() runRecipe(1) end)
+	map(config.keymaps.showRecipe, function() actions.showRecipe(recipes[lnum()]) end)
+	map(config.keymaps.showVariables, function() actions.showVariables(recipes[lnum()]) end)
 
 	-- quick-select keymaps
+	local keysUsed = {}
+	vim.iter(vim.tbl_values(config.keymaps)):flatten():each(function(key) keysUsed[key] = true end)
 	for i = 1, #recipes do
-		local recipe = recipes[i] -- save since `i` changes
-		local key = config.keymaps.quickSelect[i]
-		if key then
-			vim.keymap.set("n", key, function()
-				closeWin() -- close before run, so early notifications are not hidden
-				actions.runRecipe(recipe)
-			end, opts)
+		local key
+		local col = 0
+		repeat
+			col = col + 1
+			key = recipes[i].name:sub(col, col)
+		until not keysUsed[key] or key == ""
+		if key ~= "" then
+			keysUsed[key] = true
+			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, col, {
+				hl_group = config.highlights.quickSelect,
+				end_col = col + 1,
+			})
+			map(key, function() runRecipe(i) end)
 		end
-		vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, 0, {
-			virt_text = { { key or " ", config.highlights.quickSelect }, { " " } },
-			virt_text_pos = "inline",
-		})
 	end
 end
 

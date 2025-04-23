@@ -5,7 +5,7 @@ masonPath := "$HOME/.local/share/nvim/mason/bin/"
 #───────────────────────────────────────────────────────────────────────────────
 
 # streaming
-demo-progressbar:
+progressbar-demo:
     #!/usr/bin/env zsh
     char="+"
     progress=""
@@ -19,23 +19,23 @@ demo-progressbar:
     echo "Done."
 
 # quickfix
-demo-quickfix:
-    rg --vimgrep "local"
+quickfix-demo:
+    rg --vimgrep "recipe"
 
-demo-failure:
+failure-demo:
     #!/usr/bin/env zsh
     echo "failure"
     sleep 0.1
     exit 1
 
-demo-success:
+success-demo:
     #!/usr/bin/env zsh
     echo "success"
     sleep 0.1
     exit 0
 
 # asks for input
-demo-in-terminal:
+in-terminal-demo:
     #!/usr/bin/env zsh
     echo "Enter something: "
     read -r input
