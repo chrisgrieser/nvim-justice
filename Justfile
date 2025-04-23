@@ -1,9 +1,8 @@
-# INFO
-# This file is for testing and demonstration purposes only. The recipes do not
-# perform any actually useful actions.
-#───────────────────────────────────────────────────────────────────────────────
-
 set quiet := true
+
+masonPath := "$HOME/.local/share/nvim/mason/bin/"
+
+#───────────────────────────────────────────────────────────────────────────────
 
 # streaming
 demo-progressbar:
@@ -42,3 +41,15 @@ demo-in-terminal:
     read -r input
     echo
     echo "Input was: $input"
+
+
+#───────────────────────────────────────────────────────────────────────────────
+
+stylua:
+    #!/usr/bin/env zsh
+    {{ masonPath }}/stylua --check --output-format=summary . && return 0
+    {{ masonPath }}/stylua .
+    echo "\nFiles formatted."
+
+lua_ls_check:
+    {{ masonPath }}/lua-language-server --check .
