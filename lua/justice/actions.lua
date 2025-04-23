@@ -109,12 +109,16 @@ function M.runRecipe(recipe)
 
 			if recipe.type == "quickfix" then
 				local efm = vim.bo.efm ~= "" and vim.bo.efm or vim.o.efm
+				local lines = vim.split(text, "\n")
 				vim.fn.setqflist({}, " ", {
 					title = "just " .. recipe.name,
-					lines = vim.split(text, "\n"),
+					lines = lines,
 					efm = efm,
 				})
 				vim.api.nvim_exec_autocmds("QuickFixCmdPost", {})
+				local icon = require("justice.config").config.icons.quickfix
+				local msg = ("%d items added to the quickfix list."):format(#lines)
+				vim.notify(msg, nil, { title = recipe.name, icon = icon })
 			else
 				local severity = out.code == 0 and "info" or "error"
 				notify(text, severity, { title = recipe.name })
