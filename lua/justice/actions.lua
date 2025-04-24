@@ -99,6 +99,8 @@ function M.runRecipe(recipe)
 	end
 
 	-- 3) DEFAULT / QUICKFIX
+	if recipe.type == "quickfix" then vim.api.nvim_exec_autocmds("QuickFixCmdPre", {}) end
+
 	vim.system(
 		recipe:shellArgs(recipe.name),
 		{},
@@ -106,6 +108,7 @@ function M.runRecipe(recipe)
 			vim.cmd.checktime() -- reload in case of changes
 			local text = ((out.stdout or "") .. (out.stderr or ""))
 			text = cleanShellOutput(text)
+			local severity = out.code == 0 and "info" or "error"
 
 			if recipe.type == "quickfix" then
 				local efm = vim.bo.efm ~= "" and vim.bo.efm or vim.o.efm
@@ -118,9 +121,8 @@ function M.runRecipe(recipe)
 				vim.api.nvim_exec_autocmds("QuickFixCmdPost", {})
 				local icon = require("justice.config").config.icons.quickfix
 				local msg = ("%d items added to the quickfix list."):format(#lines)
-				vim.notify(msg, nil, { title = recipe.name, icon = icon })
+				notify(msg, severity, { title = recipe.name, icon = icon })
 			else
-				local severity = out.code == 0 and "info" or "error"
 				notify(text, severity, { title = recipe.name })
 			end
 		end)

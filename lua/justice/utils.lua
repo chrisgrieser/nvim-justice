@@ -28,7 +28,7 @@ function M.notify(msg, level, opts)
 	if not opts then opts = {} end
 
 	opts.id = "just-recipe" -- `snacks.nvim` replaces notifications of same id
-	opts.icon = require("justice.config").config.icons.just
+	opts.icon = opts.icon or require("justice.config").config.icons.just
 	opts.title = opts.title and "Just: " .. opts.title or "Just"
 	vim.notify(msg, vim.log.levels[level:upper()], opts)
 end
