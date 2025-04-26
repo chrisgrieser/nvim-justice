@@ -95,15 +95,15 @@ require("justice").setup {
 		recipeCommentMaxLen = 35,
 	},
 	highlights = {
-		quickSelect = "IncSearch",
+		quickSelect = "Keyword",
 		icons = "Function",
 	},
 	icons = {
 		just = "󰖷",
 		streaming = "ﲋ",
 		quickfix = "",
-		ignore = "󰈉",
 		terminal = "",
+		ignore = "󰈉",
 	},
 }
 ```
