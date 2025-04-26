@@ -1,4 +1,4 @@
-*nvim-justice.txt*            For Neovim            Last change: 2025 April 23
+*nvim-justice.txt*            For Neovim            Last change: 2025 April 26
 
 ==============================================================================
 Table of Contents                             *nvim-justice-table-of-contents*
@@ -109,15 +109,15 @@ The `setup` call is optional.
             recipeCommentMaxLen = 35,
         },
         highlights = {
-            quickSelect = "IncSearch",
+            quickSelect = "Keyword",
             icons = "Function",
         },
         icons = {
             just = "󰖷",
             streaming = "ﲋ",
             quickfix = "",
-            ignore = "󰈉",
             terminal = "",
+            ignore = "󰈉",
         },
     }
 <
