@@ -18,15 +18,15 @@ local defaultConfig = {
 	recipes = {
 		-- All strings are checked via `string.find`, that is as lua patterns.
 		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
-		streaming = { -- streams output, useful for progress bars (requires `snacks.nvim`)
+		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
-		terminal = { -- runs in terminal, useful for recipes with input
+		terminal = { -- useful for recipes with input
 			name = {},
 			comment = { "input" },
 		},
-		quickfix = { -- runs synchronously and sends output to quickfix list
+		quickfix = {
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},

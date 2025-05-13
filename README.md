@@ -16,7 +16,8 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
+- [Advanced usage](#advanced-usage)
+	* [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
 - [About the author](#about-the-author)
 
 <!-- tocstop -->
@@ -26,11 +27,11 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
   recipes thus requires only 2–3 keystrokes.
 - As opposed to vim's builtin `:make`, always runs **asynchronously**.
 - Different run modes
-	1. **Default**: results are shown in a notification window
-	2. **Quickfix**: output is added to the quickfix list, using the
-	   [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
-	3. **Streaming**: useful for recipes with progress bars
-	4. **Terminal**: handy for recipes that require input
+	* **Default**: results are shown in a notification window
+	* **Quickfix**: output is added to the quickfix list, using the
+	  [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
+	* **Streaming**: useful for recipes with progress bars
+	* **Terminal**: handy for recipes that require input
 - Inspect recipes and variable values.
 - Hide specific recipes, helpful to always exclude recipes that require user
   input.
@@ -60,15 +61,15 @@ require("justice").setup {
 	recipes = {
 		-- All strings are checked via `string.find`, that is as lua patterns.
 		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
-		streaming = { -- streams output, useful for progress bars (requires `snacks.nvim`)
+		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
-		terminal = { -- runs in terminal, useful for recipes with input
+		terminal = { -- useful for recipes with input
 			name = {},
 			comment = { "input" },
 		},
-		quickfix = { -- runs synchronously and sends output to quickfix list
+		quickfix = {
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},
@@ -124,7 +125,7 @@ require("justice").select()
 - **Quick-select** recipes via keys shown at the left of the window.
 - Show recipe via `<Space>`.
 
-**Use with specific Justfile**
+**Use with a specific Justfile**
 
 ```lua
 require("justice").select({
@@ -132,14 +133,19 @@ require("justice").select({
 })
 ```
 
-## Using progress bars and streaming output
+## Advanced usage
+
+### Using progress bars and streaming output
 Here is an example of a `just` recipe that displays a simple progress bar
 
 This kind of progress bar works the same when triggered in the terminal via
 `just demo-progressbar` and via `nivm-justice`.
 
 ```just
-# streaming <-- makes nvim-justice stream the output
+# `opts.recipes.streaming.comment` is configured to make recipes whose comment
+# contains "streaming" stream the output
+
+# streaming
 demo-progressbar:
     #!/usr/bin/env zsh
     char="+"
@@ -154,8 +160,9 @@ demo-progressbar:
     echo "Done."
 ```
 
-Note the following version of a progress bar works in the terminal, but will not
-work in `nvim-justice`, since the plugin prints every unit of data individually.
+Note that the following version of a progress bar works in the terminal, but
+will not work in `nvim-justice`, since the plugin prints every unit of data
+individually.
 
 ```just
 # streaming
