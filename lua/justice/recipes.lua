@@ -91,25 +91,18 @@ function M.get(opts)
 		notify(result2.stderr, "error")
 		return
 	end
-	local recipeData = vim.json.decode(result2.stdout)
+	local recipeData = vim.json.decode(result2.stdout, { luanil = { object = true } })
 
 	-- MERGE THEM
-	local recipes = vim.iter(recipesInOrder)
-		:map(function(name)
-			local data = recipeData.recipes[name]
-			-- `vim.json.decode()` converts null values in the json to `vim.NIL`
-			local comment = data.doc ~= vim.NIL and data.doc or nil
-			local params = data.parameters
-			if params.default == vim.NIL then params.default = nil end
-
-			return Recipe:new {
-				name = name,
-				comment = comment,
-				parameterSpec = params,
-				justfile = opts.justfile,
-			}
-		end)
-		:totable()
+	local recipes = vim.tbl_map(function(name)
+		local data = recipeData.recipes[name]
+		return Recipe:new {
+			name = name,
+			comment = data.doc,
+			parameterSpec = data.parameters,
+			justfile = opts.justfile,
+		}
+	end, recipesInOrder)
 	return recipes
 end
 
