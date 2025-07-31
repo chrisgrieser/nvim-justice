@@ -16,8 +16,8 @@ end
 ---@class Justice.Config
 local defaultConfig = {
 	recipes = {
-		-- All strings are checked via `string.find`, that is as lua patterns.
-		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
+		-- All strings are interpreted as lua patterns.
+		-- (Thus, any `-` needs to be escaped as `%-`)
 		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
@@ -31,7 +31,7 @@ local defaultConfig = {
 			comment = { "quickfix" },
 		},
 		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- ...if the name contains with "_"
+			name = { "fzf", "^_" }, -- …if recipe name contains "fzf" or starts with "_"
 			comment = {},
 		},
 	},
@@ -62,6 +62,7 @@ local defaultConfig = {
 		quickfix = "",
 		terminal = "",
 		ignore = "󰈉",
+		recipeParameters = "󰘎",
 	},
 }
 

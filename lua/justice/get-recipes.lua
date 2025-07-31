@@ -8,11 +8,15 @@ local Recipe = {
 	comment = "",
 	displayText = "",
 	type = nil, ---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
-	justfile = nil, ---@type string?
+	justfile = nil, ---@type string? custom justfile provided by `--justfile=`
+
+	parameterSpec = {}, ---@type {default: string|vim.NIL, export: boolean, kind: string, name: string}[]
+	paramInputByUser = {}, ---@type string[]
 
 	---@return Justice.Recipe
 	new = function(self, newObj)
 		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
+		self.paramInputByUser = {} -- reset from previous run
 
 		-- display text
 		local config = require("justice.config").config
@@ -39,12 +43,13 @@ local Recipe = {
 	end,
 
 	---@param self Justice.Recipe
-	---@param ... string extra args to append
-	---@return string[] -- list of form { "just", ... }
-	shellArgs = function(self, ...)
+	---@return string[]
+	getRunArgs = function(self)
 		local args = { "just" }
 		if self.justfile then table.insert(args, "--justfile=" .. self.justfile) end
-		return vim.list_extend(args, { ... })
+		table.insert(args, self.name)
+		vim.list_extend(args, self.paramInputByUser)
+		return args
 	end,
 }
 
@@ -97,6 +102,7 @@ function M.get(opts)
 				name = name,
 				comment = comment,
 				justfile = opts.justfile,
+				parameterSpec = recipeData.recipes[name].parameters,
 			}
 		end)
 		:totable()

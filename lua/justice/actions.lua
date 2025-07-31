@@ -64,7 +64,7 @@ end
 
 ---@param recipe Justice.Recipe
 function M.runRecipe(recipe)
-	vim.cmd("silent! update")
+	vim.cmd("silent! update") -- in case recipe uses current file
 
 	-- PRE-RUN NOTIFICATION
 	if recipe.type ~= "terminal" then u.showRunningNotification(recipe) end
@@ -78,7 +78,7 @@ function M.runRecipe(recipe)
 		end
 		local pastData = {}
 
-		vim.system(recipe:shellArgs(recipe.name), {
+		vim.system(recipe:getRunArgs(), {
 			stdout = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 			stderr = function(_, data) pastData = streamOutput(recipe, data, pastData) end,
 		}, vim.schedule_wrap(function(out) exitOutput(recipe, out, pastData) end))
@@ -92,7 +92,7 @@ function M.runRecipe(recipe)
 		local height = require("justice.config").config.terminal.height
 		vim.api.nvim_win_set_height(0, height)
 
-		local argStr = table.concat(recipe:shellArgs(recipe.name), " ")
+		local argStr = table.concat(recipe:getRunArgs(), " ")
 		vim.api.nvim_chan_send(vim.bo.channel, argStr .. "\n") -- `\n` to send
 		vim.cmd.startinsert { bang = true }
 		return
@@ -102,7 +102,7 @@ function M.runRecipe(recipe)
 	if recipe.type == "quickfix" then vim.api.nvim_exec_autocmds("QuickFixCmdPre", {}) end
 
 	vim.system(
-		recipe:shellArgs(recipe.name),
+		recipe:getRunArgs(),
 		{},
 		vim.schedule_wrap(function(out)
 			vim.cmd.checktime() -- reload in case of changes
@@ -132,7 +132,11 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showRecipe(recipe)
-	local args = recipe:shellArgs("--show", recipe.name)
+	local args = {
+		"just",
+		"--show=" .. recipe.name,
+		recipe.justfile and "--justfile=" .. recipe.justfile or nil,
+	}
 	local stdout = vim.system(args):wait().stdout or "Error"
 	notify(stdout, "trace", {
 		title = recipe.name,
@@ -144,7 +148,11 @@ end
 
 ---@param recipe Justice.Recipe
 function M.showVariables(recipe)
-	local args = recipe:shellArgs("--evaluate")
+	local args = {
+		"just",
+		"--evaluate",
+		recipe.justfile and "--justfile=" .. recipe.justfile or nil,
+	}
 	local stdout = vim.system(args):wait().stdout or "Error"
 	if vim.trim(stdout) == "" then
 		notify("No variables defined.", "warn", { title = "Variables" })

@@ -30,8 +30,11 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 	* **Default**: results are shown in a notification window
 	* **Quickfix**: output is added to the quickfix list, using the
 	  [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
-	* **Streaming**: useful for recipes with progress bars
-	* **Terminal**: handy for recipes that require input
+	* **Streaming**: useful for example when the recipe has a progress bar
+	* **Terminal**: useful for example when the recipe prompts for further input
+- Support for `just`'s [run
+  parameters](https://just.systems/man/en/recipe-parameters.html). Parameters
+  are read via `vim.ui.select`
 - Inspect recipes and variable values.
 - Hide specific recipes, helpful to always exclude recipes that require user
   input.
@@ -42,6 +45,8 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - [just](https://github.com/casey/just)
 - *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (for streaming
   output)
+- *optional:* `vim.ui.input` provider, such as
+  [snacks.nvim](http://github.com/folke/snacks.nvim)
 - *optional:* Treesitter parser for syntax highlighting (`:TSInstall just`)
 
 ```lua
@@ -59,8 +64,8 @@ The `setup` call is optional.
 -- default settings
 require("justice").setup {
 	recipes = {
-		-- All strings are checked via `string.find`, that is as lua patterns.
-		-- (Note that in lua patterns, a `-` needs to escaped as `%-`.)
+		-- All strings are interpreted as lua patterns. 
+		-- (Thus, any `-` needs to be escaped as `%-`)
 		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
@@ -74,7 +79,7 @@ require("justice").setup {
 			comment = { "quickfix" },
 		},
 		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- ...if the name contains with "_"
+			name = { "fzf", "^_" }, -- …if recipe name contains "fzf" or starts with "_"
 			comment = {},
 		},
 	},
@@ -104,7 +109,7 @@ require("justice").setup {
 		streaming = "ﲋ",
 		quickfix = "",
 		terminal = "",
-		ignore = "󰈉",
+		recipeParameters = "󰘎",
 	},
 }
 ```
@@ -119,11 +124,16 @@ require("justice").select()
 :Justice
 ```
 
-**Keymaps**
+If the recipe expects parameters, `nvim-justice` will automatically prompt for
+them.
+
+**Keymaps in the selection window**
 - Navigate the window via `<Tab>` & `<S-Tab>`.
-- Select with `<CR>`.
-- **Quick-select** recipes via keys shown at the left of the window.
-- Show recipe via `<Space>`.
+- Run selected recipe with `<CR>`.
+- **Quick-select** recipes via the highlighted keys.
+- Run the first recipe via `1`.
+- Inspect recipe via `<Space>`.
+- Show variable values via `?`.
 
 **Use with a specific Justfile**
 

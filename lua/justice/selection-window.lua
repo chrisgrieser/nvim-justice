@@ -3,6 +3,33 @@ local notify = require("justice.utils").notify
 local actions = require("justice.actions")
 --------------------------------------------------------------------------------
 
+---@param recipe Justice.Recipe
+local function promptForRunParameters(recipe)
+	if #recipe.parameterSpec == 0 then
+		actions.runRecipe(recipe)
+		return
+	end
+
+	-- recursively call `vim.ui.input` for all parameters
+	local function inputParam()
+		local paramName = recipe.parameterSpec[#recipe.paramInputByUser + 1].name
+		local icon = require("justice.config").config.icons.just
+		local prompt = ("%s Enter value %q for recipe %q "):format(icon, paramName, recipe.name)
+		vim.ui.input({ prompt = prompt }, function(input)
+			if not input then return end -- user aborted input
+			table.insert(recipe.paramInputByUser, input)
+			if #recipe.paramInputByUser < #recipe.parameterSpec then
+				inputParam()
+			else
+				actions.runRecipe(recipe)
+			end
+		end)
+	end
+	inputParam()
+end
+
+--------------------------------------------------------------------------------
+
 ---@param allRecipes Justice.Recipe[]
 function M.select(allRecipes)
 	local config = require("justice.config").config
@@ -21,7 +48,9 @@ function M.select(allRecipes)
 	-- calculate window size
 	local longestRecipe = vim.iter(recipes):fold(0, function(acc, r)
 		local iconWidth = r.type and vim.api.nvim_strwidth(config.icons[r.type]) or 0
-		local width = #r.displayText + iconWidth
+		local parameterWidth = #r.parameterSpec == 0 and 0
+			or vim.api.nvim_strwidth(config.icons.recipeParameters) + 1
+		local width = #r.displayText + iconWidth + parameterWidth
 		return math.max(acc, width)
 	end)
 	local quickKeyWidth = 2
@@ -68,6 +97,14 @@ function M.select(allRecipes)
 				virt_text_pos = "inline",
 			})
 		end
+		local paramCount = #recipes[i].parameterSpec
+		if paramCount > 0 then
+			local virtText = (" %d%s "):format(paramCount, config.icons.recipeParameters)
+			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, #recipes[i].name + 1, {
+				virt_text = { { virtText, config.highlights.icons } },
+				virt_text_pos = "inline",
+			})
+		end
 	end
 
 	-- KEYMAPS
@@ -77,7 +114,7 @@ function M.select(allRecipes)
 	end
 	local function runRecipe(ln)
 		closeWin() -- close before run, so early notifications are not hidden
-		actions.runRecipe(recipes[ln])
+		promptForRunParameters(recipes[ln])
 	end
 	local function lnum() return vim.api.nvim_win_get_cursor(0)[1] end
 	local function map(key, func) vim.keymap.set("n", key, func, { buffer = bufnr, nowait = true }) end

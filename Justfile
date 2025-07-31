@@ -1,4 +1,4 @@
-set quiet := true
+set quiet
 
 masonPath := "$HOME/.local/share/nvim/mason/bin/"
 
@@ -42,6 +42,9 @@ in-terminal-demo:
     echo
     echo "Input was: $input"
 
+args-demo one two:
+    echo {{ one }}
+    echo {{ two }}
 
 #───────────────────────────────────────────────────────────────────────────────
 
