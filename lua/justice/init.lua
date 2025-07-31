@@ -14,10 +14,10 @@ M.select = function(opts)
 	if not opts then opts = {} end
 	if opts.justfile then opts.justfile = vim.fs.normalize(opts.justfile) end
 
-	local allRecipes = require("justice.get-recipes").get(opts)
-	if not allRecipes then return end
+	local allRecipes = require("justice.recipes").get(opts)
+	if not allRecipes then return end -- error in getting recipes
 
-	require("justice.selection-window").select(allRecipes)
+	require("justice.ui").select(allRecipes)
 end
 
 --------------------------------------------------------------------------------
