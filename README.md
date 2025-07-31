@@ -89,7 +89,7 @@ require("justice").setup {
 		closeWin = { "q", "<Esc>" },
 		showRecipe = "<Space>",
 		showVariables = "?",
-		ignoreAsQuickfixKey = { "-", "_" },
+		dontUseForQuickKey = { "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"

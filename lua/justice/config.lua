@@ -46,7 +46,7 @@ local defaultConfig = {
 		closeWin = { "q", "<Esc>" },
 		showRecipe = "<Space>",
 		showVariables = "?",
-		ignoreAsQuickfixKey = { "-", "_" },
+		dontUseForQuickKey = { "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
@@ -94,6 +94,14 @@ M.setup = function(userConfig)
 			"Config `keymaps.quickSelect` is now obsolete, keys are determined dynamically via recipe name."
 		u.notify(msg, "warn")
 		M.config.keymaps.quickSelect = nil -- prevent adding to `keysUsed`
+	end
+
+	-- DEPRECATION (2025-07-31)
+	if M.config.keymaps.ignoreAsQuickfixKey then
+		local msg =
+			"Config `keymaps.ignoreAsQuickfixKey` has been renamed to `keymaps.dontUseForQuickKey` (was never about quickfix…)."
+		u.notify(msg, "warn")
+		M.config.keymaps.dontUseForQuickKey = M.config.keymaps.ignoreAsQuickfixKey
 	end
 
 	-- VALIDATE

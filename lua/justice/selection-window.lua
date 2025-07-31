@@ -95,7 +95,9 @@ function M.select(allRecipes)
 
 	-- quick-select keymaps
 	local keysUsed = {}
+	-- will add all keymaps from the config, including `ignoreAsQuickKey`
 	vim.iter(vim.tbl_values(config.keymaps)):flatten():each(function(key) keysUsed[key] = true end)
+
 	for i = 1, #recipes do
 		local key
 		local col = 0
