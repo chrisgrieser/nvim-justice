@@ -20,7 +20,7 @@ function M.select(allRecipes)
 
 	-- calculate window size
 	local longestRecipe = vim.iter(recipes):fold(0, function(acc, r)
-		local iconWidth = r.type and #config.icons[r.type] or 0
+		local iconWidth = r.type and vim.api.nvim_strwidth(config.icons[r.type]) or 0
 		local width = #r.displayText + iconWidth
 		return math.max(acc, width)
 	end)

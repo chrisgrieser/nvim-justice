@@ -119,9 +119,8 @@ function M.runRecipe(recipe)
 					efm = efm,
 				})
 				vim.api.nvim_exec_autocmds("QuickFixCmdPost", {})
-				local icon = require("justice.config").config.icons.quickfix
 				local msg = ("%d items added to the quickfix list."):format(#lines)
-				notify(msg, severity, { title = recipe.name, icon = icon })
+				notify(msg, severity, { title = recipe.name })
 			else
 				notify(text, severity, { title = recipe.name })
 			end
