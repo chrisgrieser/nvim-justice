@@ -96,13 +96,17 @@ function M.get(opts)
 	-- MERGE THEM
 	local recipes = vim.iter(recipesInOrder)
 		:map(function(name)
-			local comment = recipeData.recipes[name].doc
-			if comment == vim.NIL then comment = nil end -- null values from json become `vim.NIL`
+			local data = recipeData.recipes[name]
+			-- `vim.json.decode()` converts null values in the json to `vim.NIL`
+			local comment = data.doc ~= vim.NIL and data.doc or nil
+			local params = data.parameters
+			if params.default == vim.NIL then params.default = nil end
+
 			return Recipe:new {
 				name = name,
 				comment = comment,
+				parameterSpec = params,
 				justfile = opts.justfile,
-				parameterSpec = recipeData.recipes[name].parameters,
 			}
 		end)
 		:totable()

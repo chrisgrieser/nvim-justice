@@ -12,11 +12,12 @@ local function promptForRunParameters(recipe)
 
 	-- recursively call `vim.ui.input` for all parameters
 	local function inputParam()
-		local paramName = recipe.parameterSpec[#recipe.paramInputByUser + 1].name
+		local paramSpec = recipe.parameterSpec[#recipe.paramInputByUser + 1]
 		local icon = require("justice.config").config.icons.just
-		local prompt = ("%s Enter value %q for recipe %q "):format(icon, paramName, recipe.name)
+		local prompt = ("%s Parameter %q for recipe %q "):format(icon, paramSpec.name, recipe.name)
 		vim.ui.input({ prompt = prompt }, function(input)
 			if not input then return end -- user aborted input
+			if input == "" and paramSpec.default then input = paramSpec.default end
 			table.insert(recipe.paramInputByUser, input)
 			if #recipe.paramInputByUser < #recipe.parameterSpec then
 				inputParam()
