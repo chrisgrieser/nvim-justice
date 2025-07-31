@@ -7,11 +7,8 @@ local Recipe = {
 	name = "",
 	comment = "",
 	displayText = "",
-
-	---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
-	type = nil,
-	---@type string?
-	justfile = nil,
+	type = nil, ---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
+	justfile = nil, ---@type string?
 
 	---@return Justice.Recipe
 	new = function(self, newObj)
@@ -60,29 +57,42 @@ function M.get(opts)
 	-- in case user is currently editing a Justfile
 	if vim.bo.filetype == "just" then vim.cmd("silent! update") end
 
-	-- NOTE not using `just --dump --dump-format=json` because it does not
-	-- preserve the order of recipes https://github.com/casey/just/issues/1552
-	local args = {
+	-- RECIPE ORDER
+	-- NOTE `just --dump --dump-format=json` does not preserve the order of
+	-- recipes, thus we need an extra run of `just --summary --unsorted`
+	-- https://github.com/casey/just/issues/1552
+	local args1 = {
 		"just",
-		opts.justfile and "--justfile=" .. opts.justfile or nil,
-		"--list",
+		"--summary",
 		"--unsorted",
-		"--list-heading=",
-		"--list-prefix=",
+		opts.justfile and "--justfile=" .. opts.justfile or nil,
 	}
-	args = vim.tbl_filter(function(a) return a end, args) -- remove nils
-
-	local result = vim.system(args):wait()
+	local result = vim.system(args1):wait()
 	if result.code ~= 0 then
 		notify(result.stderr, "error")
 		return
 	end
-	local stdout = vim.split(result.stdout, "\n", { trimempty = true })
+	local recipesInOrder = vim.split(vim.trim(result.stdout), " ")
 
-	local recipes = vim.iter(stdout)
-		:map(function(line)
-			local name, comment = line:match("^(%S+)%s*# (.+)")
-			if not name then name = line:match("^%S+") end
+	-- RECIPE METADATA
+	local args2 = {
+		"just",
+		"--dump",
+		"--dump-format=json",
+		opts.justfile and "--justfile=" .. opts.justfile or nil,
+	}
+	local result2 = vim.system(args2):wait()
+	if result2.code ~= 0 then
+		notify(result2.stderr, "error")
+		return
+	end
+	local recipeData = vim.json.decode(result2.stdout)
+
+	-- MERGE THEM
+	local recipes = vim.iter(recipesInOrder)
+		:map(function(name)
+			local comment = recipeData.recipes[name].doc
+			if comment == vim.NIL then comment = nil end -- null values from json become `vim.NIL`
 			return Recipe:new {
 				name = name,
 				comment = comment,
