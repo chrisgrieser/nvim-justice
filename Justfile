@@ -1,9 +1,5 @@
 set quiet
 
-masonPath := "$HOME/.local/share/nvim/mason/bin/"
-
-#───────────────────────────────────────────────────────────────────────────────
-
 # streaming
 progressbar-demo:
     #!/usr/bin/env zsh
@@ -18,7 +14,6 @@ progressbar-demo:
     printf "\33[2K\r"
     echo "Done."
 
-# quickfix
 quickfix-demo:
     rg --vimgrep "recipe"
 
@@ -34,7 +29,6 @@ success-demo:
     sleep 0.1
     exit 0
 
-# asks for input
 in-terminal-demo:
     #!/usr/bin/env zsh
     echo "Enter something: "
@@ -45,14 +39,3 @@ in-terminal-demo:
 args-demo one two:
     echo {{ one }}
     echo {{ two }}
-
-#───────────────────────────────────────────────────────────────────────────────
-
-stylua:
-    #!/usr/bin/env zsh
-    {{ masonPath }}/stylua --check --output-format=summary . && return 0
-    {{ masonPath }}/stylua .
-    echo "\nFiles formatted."
-
-lua_ls_check:
-    {{ masonPath }}/lua-language-server --check .
