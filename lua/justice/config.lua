@@ -24,7 +24,7 @@ local defaultConfig = {
 		},
 		terminal = { -- useful for recipes with input
 			name = {},
-			comment = { "input" },
+			comment = { "input", "terminal" },
 		},
 		quickfix = {
 			name = { "%-qf$" }, -- name ending with "-qf"
@@ -46,7 +46,7 @@ local defaultConfig = {
 		closeWin = { "q", "<Esc>" },
 		showRecipe = "<Space>",
 		showVariables = "?",
-		dontUseForQuickKey = { "-", "_" },
+		dontUseForQuickKey = { "j", "k", "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
