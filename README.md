@@ -18,6 +18,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - [Usage](#usage)
 - [Advanced usage](#advanced-usage)
 	* [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
+- [More `just` tooling for nvim](#more-just-tooling-for-nvim)
 - [About the author](#about-the-author)
 
 <!-- tocstop -->
@@ -154,7 +155,7 @@ require("justice").select({
 Here is an example of a `just` recipe that displays a simple progress bar
 
 This kind of progress bar works the same when triggered in the terminal via
-`just demo-progressbar` and via `nivm-justice`.
+`just demo-progressbar` or via `nivm-justice`.
 
 ```just
 # `opts.recipes.streaming.comment` is configured to make recipes whose comment
@@ -167,7 +168,7 @@ demo-progressbar:
     progress=""
     for i in {1..20}; do
         progress="$progress$char"
-		printf "\33[2K\r" # `\33[2K` fully erase the line, `\r` moves to the BoL
+		printf "\33[2K\r" # `\33[2K` fully erase the line, `\r` moves to start of line
         printf "$progress" # printf (or `echo -n`) needed to not create a newline
         sleep 0.1
     done
@@ -176,12 +177,12 @@ demo-progressbar:
 ```
 
 Note that the following version of a progress bar works in the terminal, but
-will not work in `nvim-justice`, since the plugin prints every unit of data
+not work in `nvim-justice`, since the plugin prints every unit of data
 individually.
 
 ```just
 # streaming
-progressbar_not_working_in_nvim-justice:
+progressbar_not_working_in_nvim_justice:
     #!/usr/bin/env zsh
     char="+"
     for i in {1..20}; do
@@ -191,6 +192,11 @@ progressbar_not_working_in_nvim-justice:
     printf "\33[2K\r"
     echo "Done."
 ```
+
+## More `just` tooling for nvim
+- [Just-LSP](https://github.com/terror/just-lsp)
+- [Treesitter parser for
+  Just](https://github.com/IndianBoy42/tree-sitter-just) (`:TSInstall just`)
 
 ## About the author
 In my day job, I am a sociologist studying the social mechanisms underlying the
