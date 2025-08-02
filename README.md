@@ -35,7 +35,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 	* **Terminal**: useful for example when the recipe prompts for further input
 - Support for `just`'s [run
   parameters](https://just.systems/man/en/recipe-parameters.html). Parameters
-  are read via `vim.ui.input`
+  are read via `vim.ui.input`.
 - Inspect recipes and variable values.
 - Hide specific recipes, helpful to always exclude recipes that require user
   input.
@@ -47,15 +47,17 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (for streaming
   output)
 - *optional:* `vim.ui.input` provider, such as
-  [snacks.nvim](http://github.com/folke/snacks.nvim)
+  [snacks.nvim](http://github.com/folke/snacks.nvim), for nicer recipe parameter
+  input
 - *optional:* Treesitter parser for syntax highlighting (`:TSInstall just`)
 
 ```lua
 -- lazy.nvim
-{ "chrisgrieser/nvim-justice" },
-
--- packer
-use { "chrisgrieser/nvim-justice" }
+return { 
+	"chrisgrieser/nvim-justice"
+	-- optional, for streaming output and nicer parameter input
+	-- dependencies = "folke/snacks.nvim",
+}
 ```
 
 ## Configuration
