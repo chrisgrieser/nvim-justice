@@ -14,7 +14,7 @@ local function promptForRunParameters(recipe)
 	local function inputParam()
 		local paramSpec = recipe.parameterSpec[#recipe.paramInputByUser + 1]
 		local icon = require("justice.config").config.window.icons.just
-		local prompt = ("%s Parameter %q for recipe %q "):format(icon, paramSpec.name, recipe.name)
+		local prompt = ("%s Enter %q for recipe %q "):format(icon, paramSpec.name, recipe.name)
 		vim.ui.input({ prompt = prompt }, function(input)
 			if not input then return end -- user aborted input
 			if input == "" and paramSpec.default then input = paramSpec.default end
@@ -137,7 +137,7 @@ function M.select(allRecipes)
 
 	-- quick-select keymaps
 	local keysUsed = {}
-	-- will add all keymaps from the config, including `ignoreAsQuickKey`
+	-- will add all keymaps from the config, including `dontUseForQuickKey`
 	vim.iter(vim.tbl_values(keymaps)):flatten():each(function(key) keysUsed[key] = true end)
 
 	for i = 1, #recipes do
@@ -150,7 +150,7 @@ function M.select(allRecipes)
 		if key ~= "" then
 			keysUsed[key] = true
 			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, col, {
-				hl_group = hlgroups.quickSelect,
+				hl_group = hlgroups.quickKey,
 				end_col = col + 1,
 			})
 			map(key, function() runRecipe(i) end)
