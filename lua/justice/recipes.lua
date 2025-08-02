@@ -1,5 +1,5 @@
 local M = {}
-local notify = require("justice.utils").notify
+local notify = require("justice.utils").replaceNotif
 --------------------------------------------------------------------------------
 
 ---@class Justice.Recipe
@@ -7,7 +7,7 @@ local Recipe = {
 	name = "",
 	comment = "",
 	displayText = "",
-	type = nil, ---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
+	mode = nil, ---@type "streaming"|"quickfix"|"ignore"|"terminal"|nil
 	justfile = nil, ---@type string? custom justfile provided by `--justfile=`
 
 	parameterSpec = {}, ---@type {default: string|vim.NIL, export: boolean, kind: string, name: string}[]
@@ -16,7 +16,7 @@ local Recipe = {
 	---@return Justice.Recipe
 	new = function(self, newObj)
 		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
-		self.paramInputByUser = {} -- reset from previous run
+		self.paramInputByUser = {} ---@type string[]
 
 		-- display text
 		local config = require("justice.config").config
@@ -27,14 +27,15 @@ local Recipe = {
 		end
 		newObj.displayText = vim.trim(newObj.name .. "  " .. displayComment)
 
-		-- recipe type
-		for key, pattern in pairs(config.recipes) do
-			local ignoreName = vim.iter(pattern.name)
+		-- recipe mode
+		for key, pattern in pairs(config.recipeModes) do
+			local nameMatches = vim.iter(pattern.name)
 				:any(function(pat) return newObj.name:find(pat) ~= nil end)
-			local ignoreCom = vim.iter(pattern.comment)
-				:any(function(pat) return (newObj.comment or ""):find(pat) ~= nil end)
-			if ignoreName or ignoreCom then
-				newObj.type = key
+			local commentMatches = vim.iter(pattern.comment):any(
+				function(pat) return (newObj.comment or ""):find(pat) ~= nil end
+			)
+			if nameMatches or commentMatches then
+				newObj.mode = key
 				break
 			end
 		end

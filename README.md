@@ -27,7 +27,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - **Quick-select** recipes via keys shown at the left of the window. Running
   recipes thus requires only 2–3 keystrokes.
 - As opposed to vim's builtin `:make`, always runs **asynchronously**.
-- Different run modes
+- **Modes** for running recipes:
 	* **Default**: results are shown in a notification window
 	* **Quickfix**: output is added to the quickfix list, using the
 	  [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
@@ -35,7 +35,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 	* **Terminal**: useful for example when the recipe prompts for further input
 - Support for `just`'s [run
   parameters](https://just.systems/man/en/recipe-parameters.html). Parameters
-  are read via `vim.ui.select`
+  are read via `vim.ui.input`
 - Inspect recipes and variable values.
 - Hide specific recipes, helpful to always exclude recipes that require user
   input.
@@ -64,53 +64,56 @@ The `setup` call is optional.
 ```lua
 -- default settings
 require("justice").setup {
-	recipes = {
-		-- All strings are interpreted as lua patterns. 
-		-- (Thus, any `-` needs to be escaped as `%-`)
+	-- Defines how recipe modes are determined. For example, if a recipe has
+	-- "download" in the name, or if it has "streaming" or "curl" in the comment,
+	-- it will be considered a "streaming" recipe.
+	-- (strings are interpreted as lua patterns, thus `-` needs to be escaped as `%-`)
+	recipeModes = {
 		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
 		terminal = { -- useful for recipes with input
 			name = {},
-			comment = { "input", "terminal" },
+			comment = { "input", "terminal", "fzf" },
 		},
 		quickfix = {
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},
 		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- …if recipe name contains "fzf" or starts with "_"
+			name = {},
 			comment = {},
 		},
-	},
-	terminal = {
-		height = 10,
-	},
-	keymaps = {
-		next = "<Tab>",
-		prev = "<S-Tab>",
-		runRecipeUnderCursor = "<CR>",
-		runFirstRecipe = "1",
-		closeWin = { "q", "<Esc>" },
-		showRecipe = "<Space>",
-		showVariables = "?",
-		dontUseForQuickKey = { "j", "k", "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
 		recipeCommentMaxLen = 35,
+		keymaps = {
+			next = "<Tab>",
+			prev = "<S-Tab>",
+			runRecipeUnderCursor = "<CR>",
+			runFirstRecipe = "1",
+			closeWin = { "q", "<Esc>" },
+			showRecipe = "<Space>",
+			showVariables = "?",
+			dontUseForQuickKey = { "j", "k", "-", "_" },
+		},
+		highlightGroups = {
+			quickKey = "Keyword",
+			icons = "Function",
+		},
+		icons = {
+			just = "󰖷",
+			streaming = "ﲋ",
+			quickfix = "",
+			terminal = "",
+			ignore = "󰈉",
+			recipeParameters = "󰘎",
+		},
 	},
-	highlights = {
-		quickSelect = "Keyword",
-		icons = "Function",
-	},
-	icons = {
-		just = "󰖷",
-		streaming = "ﲋ",
-		quickfix = "",
-		terminal = "",
-		recipeParameters = "󰘎",
+	terminal = {
+		height = 10,
 	},
 }
 ```

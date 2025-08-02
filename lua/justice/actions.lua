@@ -1,7 +1,7 @@
 local M = {}
 
 local u = require("justice.utils")
-local notify = require("justice.utils").notify
+local notify = require("justice.utils").replaceNotif
 --------------------------------------------------------------------------------
 
 ---Most CLIs properly remove ansi color codes when piping to a non-terminal, but
@@ -67,10 +67,10 @@ function M.runRecipe(recipe)
 	vim.cmd("silent! update") -- in case recipe uses current file
 
 	-- PRE-RUN NOTIFICATION
-	if recipe.type ~= "terminal" then u.showRunningNotification(recipe) end
+	if recipe.mode ~= "terminal" then u.showRunningNotification(recipe) end
 
 	-- 1) STREAMING
-	if recipe.type == "streaming" then
+	if recipe.mode == "streaming" then
 		if not package.loaded["snacks"] then
 			local msg = "`snacks.nvim` is required for streaming output."
 			notify(msg, "error", { title = recipe.name })
@@ -86,7 +86,7 @@ function M.runRecipe(recipe)
 	end
 
 	-- 2) TERMINAL
-	if recipe.type == "terminal" then
+	if recipe.mode == "terminal" then
 		vim.cmd.new() -- bottom split new window
 		vim.cmd.terminal()
 		local height = require("justice.config").config.terminal.height
@@ -99,7 +99,7 @@ function M.runRecipe(recipe)
 	end
 
 	-- 3) DEFAULT / QUICKFIX
-	if recipe.type == "quickfix" then vim.api.nvim_exec_autocmds("QuickFixCmdPre", {}) end
+	if recipe.mode == "quickfix" then vim.api.nvim_exec_autocmds("QuickFixCmdPre", {}) end
 
 	vim.system(
 		recipe:getRunArgs(),
@@ -110,7 +110,7 @@ function M.runRecipe(recipe)
 			text = cleanShellOutput(text)
 			local severity = out.code == 0 and "info" or "error"
 
-			if recipe.type == "quickfix" then
+			if recipe.mode == "quickfix" then
 				local efm = vim.bo.efm ~= "" and vim.bo.efm or vim.o.efm
 				local lines = vim.split(text, "\n")
 				vim.fn.setqflist({}, " ", {

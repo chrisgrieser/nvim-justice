@@ -1,5 +1,5 @@
 local M = {}
-local notify = require("justice.utils").notify
+local notify = require("justice.utils").replaceNotif
 local actions = require("justice.actions")
 --------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ local function promptForRunParameters(recipe)
 	-- recursively call `vim.ui.input` for all parameters
 	local function inputParam()
 		local paramSpec = recipe.parameterSpec[#recipe.paramInputByUser + 1]
-		local icon = require("justice.config").config.icons.just
+		local icon = require("justice.config").config.window.icons.just
 		local prompt = ("%s Parameter %q for recipe %q "):format(icon, paramSpec.name, recipe.name)
 		vim.ui.input({ prompt = prompt }, function(input)
 			if not input then return end -- user aborted input
@@ -34,13 +34,15 @@ end
 ---@param allRecipes Justice.Recipe[]
 function M.select(allRecipes)
 	local config = require("justice.config").config
+	local icons = config.window.icons
+	local hlgroups = config.window.highlightGroups
 	local ns = vim.api.nvim_create_namespace("just-recipes")
-	local title = " " .. vim.trim(config.icons.just .. " Justfile") .. " "
+	local title = " " .. vim.trim(icons.just .. " Justfile") .. " "
 
 	-- prepare recipes for display
-	local recipes = vim.tbl_filter(function(r) return r.type ~= "ignore" end, allRecipes) --[[@as Justice.Recipe[] ]]
+	local recipes = vim.tbl_filter(function(r) return r.mode ~= "ignore" end, allRecipes) --[[@as Justice.Recipe[] ]]
 	if #recipes == 0 then
-		notify("After applying `recipes.ignore`, there are no left to choose from.", "warn")
+		notify("After applying `recipeModes.ignore`, no recipes left to choose from.", "warn")
 		return
 	end
 	local ignoreCount = #allRecipes - #recipes
@@ -48,9 +50,10 @@ function M.select(allRecipes)
 
 	-- calculate window size
 	local longestRecipe = vim.iter(recipes):fold(0, function(acc, r)
-		local iconWidth = r.type and vim.api.nvim_strwidth(config.icons[r.type]) or 0
+		---@cast r Justice.Recipe
+		local iconWidth = r.mode and vim.api.nvim_strwidth(icons[r.mode]) or 0
 		local parameterWidth = #r.parameterSpec == 0 and 0
-			or vim.api.nvim_strwidth(config.icons.recipeParameters) + 1
+			or vim.api.nvim_strwidth(icons.recipeParameters) + 1
 		local width = #r.displayText + iconWidth + parameterWidth
 		return math.max(acc, width)
 	end)
@@ -61,7 +64,7 @@ function M.select(allRecipes)
 	-- create window
 	local bufnr = vim.api.nvim_create_buf(false, true)
 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, displayLines)
-	local footer = (" %dx %s "):format(ignoreCount, config.icons.ignore)
+	local footer = (" %dx %s "):format(ignoreCount, icons.ignore)
 	local winnr = vim.api.nvim_open_win(bufnr, true, {
 		relative = "editor",
 		row = (vim.o.lines - winHeight) / 2,
@@ -91,18 +94,18 @@ function M.select(allRecipes)
 				vim.api.nvim_buf_add_highlight(bufnr, ns, "Comment", i - 1, #recipes[i].name, -1)
 			end
 		end
-		if recipes[i].type then
-			local icon = config.icons[recipes[i].type]
+		if recipes[i].mode then
+			local icon = icons[recipes[i].mode]
 			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, #recipes[i].name + 1, {
-				virt_text = { { " " .. icon .. " ", config.highlights.icons } },
+				virt_text = { { " " .. icon .. " ", hlgroups.icons } },
 				virt_text_pos = "inline",
 			})
 		end
 		local paramCount = #recipes[i].parameterSpec
 		if paramCount > 0 then
-			local virtText = (" %d%s "):format(paramCount, config.icons.recipeParameters)
+			local virtText = (" %d%s "):format(paramCount, icons.recipeParameters)
 			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, #recipes[i].name + 1, {
-				virt_text = { { virtText, config.highlights.icons } },
+				virt_text = { { virtText, hlgroups.icons } },
 				virt_text_pos = "inline",
 			})
 		end
@@ -121,20 +124,21 @@ function M.select(allRecipes)
 	local function map(key, func) vim.keymap.set("n", key, func, { buffer = bufnr, nowait = true }) end
 
 	-- general keymaps
-	for _, key in pairs(config.keymaps.closeWin) do
+	local keymaps = config.window.keymaps
+	for _, key in pairs(keymaps.closeWin) do
 		map(key, closeWin)
 	end
-	map(config.keymaps.next, function() vim.cmd.normal { "j", bang = true } end)
-	map(config.keymaps.prev, function() vim.cmd.normal { "k", bang = true } end)
-	map(config.keymaps.runRecipeUnderCursor, function() runRecipe(lnum()) end)
-	map(config.keymaps.runFirstRecipe, function() runRecipe(1) end)
-	map(config.keymaps.showRecipe, function() actions.showRecipe(recipes[lnum()]) end)
-	map(config.keymaps.showVariables, function() actions.showVariables(recipes[lnum()]) end)
+	map(keymaps.next, function() vim.cmd.normal { "j", bang = true } end)
+	map(keymaps.prev, function() vim.cmd.normal { "k", bang = true } end)
+	map(keymaps.runRecipeUnderCursor, function() runRecipe(lnum()) end)
+	map(keymaps.runFirstRecipe, function() runRecipe(1) end)
+	map(keymaps.showRecipe, function() actions.showRecipe(recipes[lnum()]) end)
+	map(keymaps.showVariables, function() actions.showVariables(recipes[lnum()]) end)
 
 	-- quick-select keymaps
 	local keysUsed = {}
 	-- will add all keymaps from the config, including `ignoreAsQuickKey`
-	vim.iter(vim.tbl_values(config.keymaps)):flatten():each(function(key) keysUsed[key] = true end)
+	vim.iter(vim.tbl_values(keymaps)):flatten():each(function(key) keysUsed[key] = true end)
 
 	for i = 1, #recipes do
 		local key
@@ -146,7 +150,7 @@ function M.select(allRecipes)
 		if key ~= "" then
 			keysUsed[key] = true
 			vim.api.nvim_buf_set_extmark(bufnr, ns, i - 1, col, {
-				hl_group = config.highlights.quickSelect,
+				hl_group = hlgroups.quickSelect,
 				end_col = col + 1,
 			})
 			map(key, function() runRecipe(i) end)

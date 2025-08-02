@@ -15,54 +15,56 @@ end
 
 ---@class Justice.Config
 local defaultConfig = {
-	recipes = {
-		-- All strings are interpreted as lua patterns.
-		-- (Thus, any `-` needs to be escaped as `%-`)
+	-- Defines how recipe modes are determined. For example, if a recipe has
+	-- "download" in the name, or if it has "streaming" or "curl" in the comment,
+	-- it will be considered a "streaming" recipe.
+	-- (strings are interpreted as lua patterns, thus `-` needs to be escaped as `%-`)
+	recipeModes = {
 		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
 		terminal = { -- useful for recipes with input
 			name = {},
-			comment = { "input", "terminal" },
+			comment = { "input", "terminal", "fzf" },
 		},
 		quickfix = {
 			name = { "%-qf$" }, -- name ending with "-qf"
 			comment = { "quickfix" },
 		},
 		ignore = { -- hides them from the nvim-justice selection window
-			name = { "fzf", "^_" }, -- …if recipe name contains "fzf" or starts with "_"
+			name = {},
 			comment = {},
 		},
-	},
-	terminal = {
-		height = 10,
-	},
-	keymaps = {
-		next = "<Tab>",
-		prev = "<S-Tab>",
-		runRecipeUnderCursor = "<CR>",
-		runFirstRecipe = "1",
-		closeWin = { "q", "<Esc>" },
-		showRecipe = "<Space>",
-		showVariables = "?",
-		dontUseForQuickKey = { "j", "k", "-", "_" },
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
 		recipeCommentMaxLen = 35,
+		keymaps = {
+			next = "<Tab>",
+			prev = "<S-Tab>",
+			runRecipeUnderCursor = "<CR>",
+			runFirstRecipe = "1",
+			closeWin = { "q", "<Esc>" },
+			showRecipe = "<Space>",
+			showVariables = "?",
+			dontUseForQuickKey = { "j", "k", "-", "_" },
+		},
+		highlightGroups = {
+			quickKey = "Keyword",
+			icons = "Function",
+		},
+		icons = {
+			just = "󰖷",
+			streaming = "ﲋ",
+			quickfix = "",
+			terminal = "",
+			ignore = "󰈉",
+			recipeParameters = "󰘎",
+		},
 	},
-	highlights = {
-		quickSelect = "Keyword",
-		icons = "Function",
-	},
-	icons = {
-		just = "󰖷",
-		streaming = "ﲋ",
-		quickfix = "",
-		terminal = "",
-		ignore = "󰈉",
-		recipeParameters = "󰘎",
+	terminal = {
+		height = 10,
 	},
 }
 
@@ -74,42 +76,19 @@ M.config = defaultConfig
 M.setup = function(userConfig)
 	M.config = vim.tbl_deep_extend("force", defaultConfig, userConfig or {})
 
-	-- DEPRECATION (2024-11-23)
-	if
-		M.config.recipes.ignore[1]
-		or M.config.recipes.streaming[1]
-		or M.config.recipes.quickfix[1]
-	then
-		u.notify("The `recipe` configuration has changed. Please refer to the README.", "warn")
-	end
-
-	-- DEPRECATION (2025-04-23)
-	if M.config.keymaps.runRecipe then
-		local msg = "Config `keymaps.runRecipe` has been renamed to `keymaps.runRecipeUnderCursor`."
-		u.notify(msg, "warn")
-		M.config.keymaps.runRecipeUnderCursor = M.config.keymaps.runRecipe
-		M.config.keymaps.runRecipe = nil -- prevent adding to `keysUsed`
-	end
-	if M.config.keymaps.quickSelect then
-		local msg =
-			"Config `keymaps.quickSelect` is now obsolete, keys are determined dynamically via recipe name."
-		u.notify(msg, "warn")
-		M.config.keymaps.quickSelect = nil -- prevent adding to `keysUsed`
-	end
-
-	-- DEPRECATION (2025-07-31)
-	if M.config.keymaps.ignoreAsQuickfixKey then
-		local msg =
-			"Config `keymaps.ignoreAsQuickfixKey` has been renamed to `keymaps.dontUseForQuickKey` (was never about quickfix…)."
-		u.notify(msg, "warn")
-		M.config.keymaps.dontUseForQuickKey = M.config.keymaps.ignoreAsQuickfixKey
-	end
+	-- DEPRECATION (2025-08-02)
+	---@diagnostic disable: undefined-field
+	if M.config.recipes then u.warn("Config `recipesModes` has been renamed to `recipes`.") end
+	if M.config.keymaps then u.warn("Config `keymaps` has been moved to `window.keymaps`.") end
+	if M.config.icons then u.warn("Config `icons` has been moved to `window.icons`.") end
+	if M.config.highlights then u.warn("Config `highlights` moved to `window.highlightGroups`.") end
+	---@diagnostic enable: undefined-field
 
 	-- VALIDATE
 	if M.config.window.border == "none" or M.config.window.border == "" then
 		M.config.window.border = fallbackBorder
 		local msg = ('Border "none" is not supported, falling back to %q.'):format(fallbackBorder)
-		u.notify(msg, "warn")
+		u.replaceNotif(msg, "warn")
 	end
 end
 
