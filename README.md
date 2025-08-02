@@ -130,7 +130,7 @@ require("justice").select()
 :Justice
 ```
 
-**Recipe parameters**
+**Recipe parameters**  
 If the recipe expects [parameters from the command
 line](https://just.systems/man/en/recipe-parameters.html), `nvim-justice` will
 automatically prompt for them.
@@ -138,7 +138,7 @@ automatically prompt for them.
 If a parameter default has been defined, confirm the prompt with an empty value
 to use the default.
 
-**Keymaps in the selection window**
+**Keymaps in the selection window**  
 - Navigate the window via `<Tab>` & `<S-Tab>`.
 - Run selected recipe with `<CR>`.
 - **Quick-select** recipes via the highlighted keys.
@@ -146,7 +146,7 @@ to use the default.
 - Inspect recipe via `<Space>`.
 - Show variable values via `?`.
 
-**Use with a specific Justfile (`--justfile`)**
+**Use with a specific Justfile (`--justfile`)**  
 
 ```lua
 require("justice").select({
