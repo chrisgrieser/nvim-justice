@@ -6,7 +6,7 @@
 
 Just an integration of [`just`](https://github.com/casey/just) in nvim.
 
-<img alt="Showcase" width=50% src="https://github.com/user-attachments/assets/ae011582-61b2-41d0-b479-cc5eb9b1427d">
+<img alt="Showcase" width=40% src="https://github.com/user-attachments/assets/cb35d791-dd93-4deb-9566-8e574305ad5b">
 
 ## Table of contents
 
