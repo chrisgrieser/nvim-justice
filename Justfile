@@ -14,6 +14,7 @@ progressbar-demo:
     printf "\33[2K\r"
     echo "Done."
 
+# quickfix
 quickfix-demo:
     rg --vimgrep "recipe"
 
@@ -29,6 +30,7 @@ success-demo:
     sleep 0.1
     exit 0
 
+# terminal
 in-terminal-demo:
     #!/usr/bin/env zsh
     echo "Enter something: "

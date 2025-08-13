@@ -78,7 +78,7 @@ M.setup = function(userConfig)
 
 	-- DEPRECATION (2025-08-02)
 	---@diagnostic disable: undefined-field
-	if M.config.recipes then u.warn("Config `recipesModes` has been renamed to `recipes`.") end
+	if M.config.recipes then u.warn("Config `recipes` has been renamed to `recipesModes`.") end
 	if M.config.keymaps then u.warn("Config `keymaps` has been moved to `window.keymaps`.") end
 	if M.config.icons then u.warn("Config `icons` has been moved to `window.icons`.") end
 	if M.config.highlights then u.warn("Config `highlights` moved to `window.highlightGroups`.") end
