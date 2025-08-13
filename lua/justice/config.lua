@@ -20,11 +20,11 @@ local defaultConfig = {
 	-- it will be considered a "streaming" recipe.
 	-- (strings are interpreted as lua patterns, thus `-` needs to be escaped as `%-`)
 	recipeModes = {
-		streaming = { -- useful for progress bars (requires `snacks.nvim`)
+		streaming = {                   -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
-		terminal = { -- useful for recipes with input
+		terminal = {                    -- useful for recipes with input
 			name = {},
 			comment = { "input", "terminal", "fzf" },
 		},
@@ -78,7 +78,7 @@ M.setup = function(userConfig)
 
 	-- DEPRECATION (2025-08-02)
 	---@diagnostic disable: undefined-field
-	if M.config.recipes then u.warn("Config `recipesModes` has been renamed to `recipes`.") end
+	if M.config.recipes then u.warn("Config `recipes` has been renamed to `recipesModes`.") end
 	if M.config.keymaps then u.warn("Config `keymaps` has been moved to `window.keymaps`.") end
 	if M.config.icons then u.warn("Config `icons` has been moved to `window.icons`.") end
 	if M.config.highlights then u.warn("Config `highlights` moved to `window.highlightGroups`.") end
