@@ -20,11 +20,11 @@ local defaultConfig = {
 	-- it will be considered a "streaming" recipe.
 	-- (strings are interpreted as lua patterns, thus `-` needs to be escaped as `%-`)
 	recipeModes = {
-		streaming = {                   -- useful for progress bars (requires `snacks.nvim`)
+		streaming = { -- useful for progress bars (requires `snacks.nvim`)
 			name = { "download" },
 			comment = { "streaming", "curl" }, -- comment contains "streaming" or "curl"
 		},
-		terminal = {                    -- useful for recipes with input
+		terminal = { -- useful for recipes with input
 			name = {},
 			comment = { "input", "terminal", "fzf" },
 		},
