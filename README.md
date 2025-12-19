@@ -42,7 +42,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
   input.
 
 ## Installation
-**Requirements**
+**Requirements** <!-- rumdl-disable-line MD036 -->
 - nvim 0.10+
 - [just](https://github.com/casey/just)
 - *optional:* [snacks.nvim](http://github.com/folke/snacks.nvim) (for streaming
@@ -131,7 +131,7 @@ require("justice").select()
 :Justice
 ```
 
-**Recipe parameters**  
+**Recipe parameters** <!-- rumdl-disable-line MD036 -->
 If the recipe expects [parameters from the command
 line](https://just.systems/man/en/recipe-parameters.html), `nvim-justice` will
 automatically prompt for them.
@@ -139,7 +139,7 @@ automatically prompt for them.
 If a parameter default has been defined, confirm the prompt with an empty value
 to use the default.
 
-**Keymaps in the selection window**  
+**Keymaps in the selection window** <!-- rumdl-disable-line MD036 -->
 - Navigate the window via `<Tab>` & `<S-Tab>`.
 - Run selected recipe with `<CR>`.
 - **Quick-select** recipes via the highlighted keys.
