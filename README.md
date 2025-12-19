@@ -1,4 +1,5 @@
 <!-- LTeX: enabled=false -->
+
 # nvim-justice ⚖️
 <!-- LTeX: enabled=true -->
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-justice">
@@ -17,7 +18,7 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Advanced usage](#advanced-usage)
-	* [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
+    - [Using progress bars and streaming output](#using-progress-bars-and-streaming-output)
 - [More `just` tooling for nvim](#more-just-tooling-for-nvim)
 - [About the author](#about-the-author)
 
@@ -28,11 +29,11 @@ Just an integration of [`just`](https://github.com/casey/just) in nvim.
   recipes thus requires only 2–3 keystrokes.
 - As opposed to vim's builtin `:make`, always runs **asynchronously**.
 - **Modes** for running recipes:
-	* **Default**: results are shown in a notification window
-	* **Quickfix**: output is added to the quickfix list, using the
-	  [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
-	* **Streaming**: useful for example when the recipe has a progress bar
-	* **Terminal**: useful for example when the recipe prompts for further input
+    - **Default**: results are shown in a notification window
+    - **Quickfix**: output is added to the quickfix list, using the
+      [errorformat](https://neovim.io/doc/user/quickfix.html#errorformat)
+    - **Streaming**: useful for example when the recipe has a progress bar
+    - **Terminal**: useful for example when the recipe prompts for further input
 - Support for `just`'s [run
   parameters](https://just.systems/man/en/recipe-parameters.html). Parameters
   are read via `vim.ui.input`.
