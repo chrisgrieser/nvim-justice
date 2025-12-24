@@ -88,7 +88,7 @@ require("justice").setup {
 	},
 	window = {
 		border = getBorder(), -- `vim.o.winborder` on nvim 0.11, otherwise "rounded"
-		recipeCommentMaxLen = 35,
+		recipeCommentMaxLen = 30, -- set to `0` to hide recipe comments
 		keymaps = {
 			next = "<Tab>",
 			prev = "<S-Tab>",

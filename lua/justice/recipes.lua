@@ -20,11 +20,10 @@ local Recipe = {
 
 		-- display text
 		local config = require("justice.config").config
-		local displayComment = ""
-		if newObj.comment then
-			local max = config.window.recipeCommentMaxLen
-			if #newObj.comment > max then displayComment = newObj.comment:sub(1, max) .. "…" end
-		end
+		local maxLen = config.window.recipeCommentMaxLen
+		local displayComment = newObj.comment or ""
+		if #displayComment > maxLen then displayComment = newObj.comment:sub(1, maxLen) .. "…" end
+		if maxLen == 0 then displayComment = "" end
 		newObj.displayText = vim.trim(newObj.name .. "  " .. displayComment)
 
 		-- recipe mode
