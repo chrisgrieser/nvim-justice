@@ -13,10 +13,12 @@ local Recipe = {
 	parameterSpec = {}, ---@type {default: string|vim.NIL, export: boolean, kind: string, name: string}[]
 	paramInputByUser = {}, ---@type string[]
 
+	---@param self Justice.Recipe
+	---@param newObj table
 	---@return Justice.Recipe
 	new = function(self, newObj)
 		setmetatable(newObj, { __index = self }) -- https://www.lua.org/pil/16.1.html
-		self.paramInputByUser = {} ---@type string[]
+		self.paramInputByUser = {}
 
 		-- display text
 		local config = require("justice.config").config
